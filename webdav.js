@@ -62,7 +62,7 @@ async function fileUpload(file, relativepath) {
 
   const options = {
     baseUrl: `https://${getDwJson().hostname}`,
-    uri: `/on/demandware.servlet/webdav/Sites/${relativepath}`,
+    uri: `/on/demandware.servlet/webdav/Sites${relativepath}`,
     auth: {
       bearer: token
     },
@@ -88,7 +88,7 @@ async function fileDelete(file, relativepath) {
 
   const options = {
     baseUrl: `https://${getDwJson().hostname}`,
-    uri: `/on/demandware.servlet/webdav/Sites/${relativepath}`,
+    uri: `/on/demandware.servlet/webdav/Sites${relativepath}`,
     auth: {
       bearer: token
     },

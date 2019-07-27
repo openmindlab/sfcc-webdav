@@ -4,12 +4,8 @@
 
 ## Features
 
-* Authentication using API client, no Business Manager username/password required
-* Interactive prompt for logs selection
-* Support configuration of multiple instances or standard dw.json config file
-* Multiple log tailing, with merging/reordering of log entries
-* Color output based on log levels
-* Converts log timestamp to local timezone
+* API for upload and delete files via webdav, useful for real-time upload of changes file during development
+* Authentication via OCAPI client, uses dw.json for configuration
 
 ## Installation
 
@@ -59,7 +55,11 @@ For doing so access Business Manager and add the following in Administration -> 
 ## Usage
 
 ```javascript
+const sfccwebdav = require('sfcc-webdav');
 
+sfccwebdav.fileUpload('/path/to/local/file', '/cartridges/mycodeversion/app_storefront/cartridge/static/filetoupload');
+
+sfccwebdav.fileDelete('/path/to/local/file', '/cartridges/mycodeversion/app_storefront/cartridge/static/filetodelete');
 ```
 
 

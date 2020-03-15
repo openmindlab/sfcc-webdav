@@ -8,7 +8,7 @@ const request = require('request-promise-native');
 
 const cwd = process.cwd();
 
-const { log } = console;
+const { log, error } = console;
 
 let token;
 
@@ -16,13 +16,13 @@ let token;
 function getDwJson() {
   let dwjsonpath = path.join(cwd, 'dw.json');
   if (!fs.existsSync(dwjsonpath)) {
-    log(chalk.red(`Missing file ${dwjsonpath}\n`));
+    error(chalk.red(`Missing file ${dwjsonpath}\n`));
     throw new Error(`Missing file ${dwjsonpath}`);
   }
 
   const dwjson = JSON.parse(fs.readFileSync(path.join(cwd, 'dw.json'), 'UTF-8'));
   if (!dwjson.client_id || !dwjson.client_secret) {
-    log(chalk.red(`Missing client_id/client_secret in ${dwjsonpath}\n`));
+    error(chalk.red(`Missing client_id/client_secret in ${dwjsonpath}\n`));
     throw new Error(`Missing client_id/client_secret in ${dwjsonpath}`);
   }
   return dwjson;
@@ -50,7 +50,7 @@ async function authorize() {
       token = newtoken;
       return newtoken;
     } catch (err) {
-      log(chalk.red('Authorization failed:', err));
+      error(chalk.red('Authorization failed:', err));
       throw err;
     }
   }

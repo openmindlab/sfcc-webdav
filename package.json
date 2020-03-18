@@ -13,7 +13,7 @@
   "bugs": {
     "url": "https://github.com/openmindlab/sfcc-webdav/issues"
   },
-  "main": "webdav.js",
+  "main": "webdav.ts",
   "types": "webdav.d.ts",
   "license": "MIT",
   "author": {

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+/* eslint-disable camelcase */
 
 const path = require('path');
 const fs = require('fs');
@@ -11,9 +11,6 @@ const { request } = require('axios');
 const cwd = process.cwd();
 
 const { log, error } = console;
-
-let token;
-
 
 function getDwJson() {
   let dwjsonpath = path.join(cwd, 'dw.json');
@@ -30,10 +27,20 @@ function getDwJson() {
   return dwjson;
 }
 
-async function authorize() {
-  if (!token) {
-    const dwjson = getDwJson();
 
+class Webdav {
+  constructor({ client_id, client_secret }) {
+    this.client_id = client_id;
+    this.client_secret = client_secret;
+    this.authToken = undefined;
+    this.authorize();
+  }
+
+  get token() {
+    return this.authToken;
+  }
+
+  async authorize() {
     try {
       const { data } = await request(
         {
@@ -41,33 +48,30 @@ async function authorize() {
           method: 'post',
           headers: {
             'content-type': 'application/x-www-form-urlencoded'
-          }, 
+          },
           auth: {
-            username: dwjson.client_id,
-            password: dwjson.client_secret
+            username: this.client_id,
+            password: this.client_secret
           }
         }
       );
-      const newtoken = data.access_token;
-      // log(chalk.yellow(`Authenticated with client id ${dwjson.client_id}, got token ${newtoken}`));
-      token = newtoken;
-      return newtoken;
+      this.authToken = data.access_token;
     } catch (err) {
       error(chalk.red('Authorization failed:', err));
       throw err;
     }
   }
-  return token;
 }
 
+const webdavInstance = new Webdav(getDwJson());
+
 async function fileUpload(file, relativepath) {
-  await authorize();
   const fileStream = fs.createReadStream(file);
   const options = {
     baseURL: `https://${getDwJson().hostname}`,
     url: `/on/demandware.servlet/webdav/Sites${relativepath}`,
     headers: {
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${webdavInstance.token}`
     },
     method: 'PUT',
     data: fileStream
@@ -76,9 +80,8 @@ async function fileUpload(file, relativepath) {
   try {
     await request(options);
   } catch (err) {
-    token = null;
-    await authorize();
-    options.headers.Authorization = `Bearer ${token}`;
+    await webdavInstance.authorize();
+    options.headers.Authorization = `Bearer ${webdavInstance.token}`;
     await request(options);
   }
 
@@ -87,13 +90,11 @@ async function fileUpload(file, relativepath) {
 
 
 async function fileDelete(file, relativepath) {
-  await authorize();
-
   const options = {
-    baseUrl: `https://${getDwJson().hostname}`,
+    baseURL: `https://${getDwJson().hostname}`,
     url: `/on/demandware.servlet/webdav/Sites${relativepath}`,
-    auth: {
-      bearer: token
+    headers: {
+      Authorization: `Bearer ${webdavInstance.token}`
     },
     method: 'DELETE'
   };
@@ -101,9 +102,8 @@ async function fileDelete(file, relativepath) {
   try {
     await request(options);
   } catch (err) {
-    token = null;
-    await authorize();
-    options.auth.bearer = token;
+    await webdavInstance.authorize();
+    options.headers.Authorization = `Bearer ${webdavInstance.token}`;
     await request(options);
   }
 
@@ -112,6 +112,5 @@ async function fileDelete(file, relativepath) {
 
 module.exports = {
   fileUpload: fileUpload,
-  fileDelete: fileDelete,
-  authorize: authorize
+  fileDelete: fileDelete
 };

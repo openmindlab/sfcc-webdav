@@ -28,25 +28,23 @@ function getDwJson() {
 }
 
 
+
 class Webdav {
-  client_id: any;
-  client_secret: any;
-  authToken: any;
+  client_id: string;
+  client_secret: string;
+  token: string;
   trace: boolean;
-  constructor({ client_id, client_secret }) {
+  hostname: string;
+  constructor({ client_id, client_secret, hostname }) {
     this.client_id = client_id;
     this.client_secret = client_secret;
-    this.authToken = undefined;
-    this.trace = false;
-    this.authorize();
-  }
-
-  get token() {
-    return this.authToken;
+    this.hostname = hostname;
+    this.token = undefined;
+    this.trace = true;
   }
 
   async authorize() {
-    this.request({
+    const { data } = await request({
       url: 'https://account.demandware.com/dw/oauth2/access_token?grant_type=client_credentials',
       method: 'post',
       headers: {
@@ -56,10 +54,11 @@ class Webdav {
         username: this.client_id,
         password: this.client_secret
       }
-    }, (data: object) => this.authToken = data.access_token);
+    });
+    this.token = data.access_token;
   }
 
-  async request(options: object, callback: Function) {
+  async sendRequest(options: object, callback: Function) {
     try {
       let { data, status, statusText } = await request(options);
       if (this.trace) console.debug(`On request data: ${data}`)
@@ -91,41 +90,35 @@ class Webdav {
 const webdavInstance = new Webdav(getDwJson());
 
 async function fileUpload(file: string, relativepath: string) {
+  if (!webdavInstance.token) await webdavInstance.authorize();
   const fileStream = fs.createReadStream(file);
-  fileStream.on('error', err => error(`On Upload request of file ${file}, ReadStream Error: ${err}`));
-  const options = {
-    baseURL: `https://${getDwJson().hostname}`,
-    url: `/on/demandware.servlet/webdav/Sites${relativepath}`,
-    headers: {
-      Authorization: `Bearer ${webdavInstance.token}`
-    },
-    method: 'PUT',
-    data: fileStream
-  };
-
-  log(chalk.cyan(`Uploaded ${relativepath}`));
+  fileStream.on('error', (err: any) => error(`On Upload request of file ${file}, ReadStream Error: ${err}`));
+  await fileStream.on('ready', async () => {
+    const options = {
+      baseURL: `https://${webdavInstance.hostname}`,
+      url: `/on/demandware.servlet/webdav/Sites${relativepath}`,
+      headers: {
+        Authorization: `Bearer ${webdavInstance.token}`
+      },
+      method: 'PUT',
+      data: fileStream
+    };
+    await webdavInstance.sendRequest(options, () => log(chalk.cyan(`Uploaded ${relativepath}`)));
+  })
 }
 
 
 async function fileDelete(file: string, relativepath: string) {
+  if (!webdavInstance.token) await webdavInstance.authorize();
   const options = {
-    baseURL: `https://${getDwJson().hostname}`,
+    baseURL: `https://${webdavInstance.hostname}`,
     url: `/on/demandware.servlet/webdav/Sites${relativepath}`,
     headers: {
       Authorization: `Bearer ${webdavInstance.token}`
     },
     method: 'DELETE'
   };
-
-  try {
-    await request(options);
-  } catch (err) {
-    await webdavInstance.authorize();
-    options.headers.Authorization = `Bearer ${webdavInstance.token}`;
-    await request(options);
-  }
-
-  log(chalk.cyan(`Deleted  ${relativepath}`));
+  await webdavInstance.sendRequest(options, () => log(chalk.cyan(`Deleted ${relativepath}`)));
 }
 
 module.exports = {

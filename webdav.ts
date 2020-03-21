@@ -18,12 +18,7 @@ function getDwJson() {
     error(chalk.red(`Missing file ${dwjsonpath}\n`));
     throw new Error(`Missing file ${dwjsonpath}`);
   }
-
   const dwjson = JSON.parse(fs.readFileSync(path.join(cwd, 'dw.json'), 'UTF-8'));
-  if (!dwjson.client_id || !dwjson.client_secret) {
-    error(chalk.red(`Missing client_id/client_secret in ${dwjsonpath}\n`));
-    throw new Error(`Missing client_id/client_secret in ${dwjsonpath}`);
-  }
   return dwjson;
 }
 

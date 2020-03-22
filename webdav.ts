@@ -22,22 +22,22 @@ function getDwJson() {
   return dwjson;
 }
 interface DWJson {
-  client_id: string,
-  'client-id': string,
-  client_secret: string,
-  'client-secret': string,
+  client_id?: string,
+  'client-id'?: string,
+  client_secret?: string,
+  'client-secret'?: string,
   hostname: string
 }
 
 class Webdav {
-  client_id: string;
-  client_secret: string;
+  private client_id: string;
+  private client_secret: string;
   token: string;
   trace: boolean;
   hostname: string;
   constructor(dwJson: DWJson) {
-    this.client_id = dwJson?.client_id
-    this.client_secret = dwJson?.client_secret;
+    this.client_id = dwJson?.client_id || dwJson?.['client-id'];
+    this.client_secret = dwJson?.client_secret || dwJson?.['client-secret'];
     this.hostname = dwJson?.hostname;
     this.token = undefined;
     this.trace = true;

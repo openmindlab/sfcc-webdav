@@ -21,21 +21,20 @@ function getDwJson() {
   const dwjson = JSON.parse(fs.readFileSync(path.join(cwd, 'dw.json'), 'UTF-8'));
   return dwjson;
 }
-interface DWJson {
+export interface DwJson {
   client_id?: string,
   'client-id'?: string,
   client_secret?: string,
   'client-secret'?: string,
   hostname: string
 }
-
 class Webdav {
   private client_id: string;
   private client_secret: string;
   private token: string;
   private trace: boolean;
   private hostname: string;
-  constructor(dwJson: DWJson) {
+  constructor(dwJson: DwJson) {
     this.client_id = dwJson?.client_id || dwJson?.['client-id'];
     this.client_secret = dwJson?.client_secret || dwJson?.['client-secret'];
     this.hostname = dwJson?.hostname;
@@ -85,26 +84,30 @@ class Webdav {
       }
     }
   }
+
+  async fileUpload(file: string, relativepath: string) {
+    if (!this.token) await this.authorize();
+    const fileStream = fs.createReadStream(file);
+    fileStream.on('error', (err: any) => error(`On Upload request of file ${file}, ReadStream Error: ${err}`));
+    await fileStream.on('ready', async () => {
+      const options: AxiosRequestConfig = {
+        baseURL: `https://${this.hostname}`,
+        url: `/on/demandware.servlet/webdav/Sites${relativepath}`,
+        headers: {
+          Authorization: `Bearer ${this.token}`
+        },
+        method: 'PUT',
+        data: fileStream
+      };
+      await this.sendRequest(options, () => log(chalk.cyan(`Uploaded ${relativepath}`)));
+    })
+  }
 }
 
 const webdavInstance = new Webdav(getDwJson());
 
 async function fileUpload(file: string, relativepath: string) {
-  if (!webdavInstance.token) await webdavInstance.authorize();
-  const fileStream = fs.createReadStream(file);
-  fileStream.on('error', (err: any) => error(`On Upload request of file ${file}, ReadStream Error: ${err}`));
-  await fileStream.on('ready', async () => {
-    const options: AxiosRequestConfig = {
-      baseURL: `https://${webdavInstance.hostname}`,
-      url: `/on/demandware.servlet/webdav/Sites${relativepath}`,
-      headers: {
-        Authorization: `Bearer ${webdavInstance.token}`
-      },
-      method: 'PUT',
-      data: fileStream
-    };
-    await webdavInstance.sendRequest(options, () => log(chalk.cyan(`Uploaded ${relativepath}`)));
-  })
+  await webdavInstance.fileUpload(file, relativepath);
 }
 
 

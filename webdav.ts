@@ -6,7 +6,7 @@ const fs = require('fs');
 const chalk = require('chalk');
 // https://github.com/request/request/issues/3142
 // const request = require('request-promise-native');
-const { request } = require('axios');
+import Axios, { AxiosRequestConfig } from 'axios';
 
 const cwd = process.cwd();
 
@@ -32,9 +32,9 @@ interface DWJson {
 class Webdav {
   private client_id: string;
   private client_secret: string;
-  token: string;
-  trace: boolean;
-  hostname: string;
+  private token: string;
+  private trace: boolean;
+  private hostname: string;
   constructor(dwJson: DWJson) {
     this.client_id = dwJson?.client_id || dwJson?.['client-id'];
     this.client_secret = dwJson?.client_secret || dwJson?.['client-secret'];
@@ -44,7 +44,7 @@ class Webdav {
   }
 
   async authorize() {
-    const { data } = await request({
+    const { data } = await Axios.request({
       url: 'https://account.demandware.com/dw/oauth2/access_token?grant_type=client_credentials',
       method: 'post',
       headers: {
@@ -58,9 +58,9 @@ class Webdav {
     this.token = data.access_token;
   }
 
-  async sendRequest(options: object, callback: Function) {
+  async sendRequest(options: AxiosRequestConfig, callback: Function) {
     try {
-      let { data, status, statusText } = await request(options);
+      let { data, status, statusText } = await Axios.request(options);
       if (this.trace) console.debug(`On request data: ${data}`)
       if (this.trace) console.debug(`On request status: ${status}`)
       if (this.trace) console.debug(`On request status text: ${statusText}`)
@@ -74,7 +74,7 @@ class Webdav {
         options.headers.Authorization = `Bearer ${webdavInstance.token}`;
       }
       try {
-        let { data, status, statusText } = await request(options);
+        let { data, status, statusText } = await Axios.request(options);
         if (this.trace) console.debug(`On request retry data: ${data}`)
         if (this.trace) console.debug(`On request retry status: ${status}`)
         if (this.trace) console.debug(`On request retry status text: ${statusText}`)
@@ -94,7 +94,7 @@ async function fileUpload(file: string, relativepath: string) {
   const fileStream = fs.createReadStream(file);
   fileStream.on('error', (err: any) => error(`On Upload request of file ${file}, ReadStream Error: ${err}`));
   await fileStream.on('ready', async () => {
-    const options = {
+    const options: AxiosRequestConfig = {
       baseURL: `https://${webdavInstance.hostname}`,
       url: `/on/demandware.servlet/webdav/Sites${relativepath}`,
       headers: {
@@ -110,7 +110,7 @@ async function fileUpload(file: string, relativepath: string) {
 
 async function fileDelete(file: string, relativepath: string) {
   if (!webdavInstance.token) await webdavInstance.authorize();
-  const options = {
+  const options: AxiosRequestConfig = {
     baseURL: `https://${webdavInstance.hostname}`,
     url: `/on/demandware.servlet/webdav/Sites${relativepath}`,
     headers: {

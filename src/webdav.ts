@@ -6,7 +6,7 @@ const fs = require('fs');
 const chalk = require('chalk');
 // https://github.com/request/request/issues/3142
 // const request = require('request-promise-native');
-import Axios, { AxiosRequestConfig } from 'axios';
+import Axios, { AxiosRequestConfig, AxiosInstance } from 'axios';
 
 const cwd = process.cwd();
 
@@ -35,8 +35,9 @@ export class Webdav {
   private token: string;
   private trace: boolean;
   private hostname: string;
-  Webdav: typeof Webdav;
   private codeVersion: string;
+  axios: AxiosInstance;
+  Webdav: typeof Webdav;
   constructor(dwJson: DwJson) {
     this.useDwJson(dwJson);
     this.token = undefined;
@@ -51,7 +52,16 @@ export class Webdav {
   }
 
   async authorize() {
-    const { data } = await Axios.request({
+    if (!this.clientId) {
+      error(chalk.red("Missing Client-id! Cannot make authorize request without it."));
+      throw "Missing Client-id";
+
+    }
+    if (!this.clientSecret) {
+      error(chalk.red("Missing Client-secret! Cannot make authorize request without it."));
+      throw "Missing Client-secret";
+    }
+    const { data } = await this.axios.request({
       url: 'https://account.demandware.com/dw/oauth2/access_token?grant_type=client_credentials',
       method: 'post',
       headers: {
@@ -67,7 +77,7 @@ export class Webdav {
 
   async sendRequest(options: AxiosRequestConfig, callback: Function) {
     try {
-      let { data, status, statusText } = await Axios.request(options);
+      let { data, status, statusText } = await this.axios.request(options);
       if (this.trace) console.debug(`On request data: ${data}`)
       if (this.trace) console.debug(`On request status: ${status}`)
       if (this.trace) console.debug(`On request status text: ${statusText}`)
@@ -94,6 +104,10 @@ export class Webdav {
   }
 
   async fileUpload(file: string, relativepath: string) {
+    if (!this.hostname) {
+      error(chalk.red("Missing hostname! Cannot make create a request without it."));
+      throw "Missing hostname";
+    }
     if (!this.token) await this.authorize();
     const fileStream = fs.createReadStream(file);
     fileStream.on('error', (err: any) => error(`On Upload request of file ${file}, ReadStream Error: ${err}`));
@@ -112,6 +126,10 @@ export class Webdav {
   }
 
   async fileDelete(file: string, relativepath: string) {
+    if (!this.hostname) {
+      error(chalk.red("Missing hostname! Cannot make create a request without it."));
+      throw "Missing hostname";
+    }
     if (!this.token) await this.authorize();
     const options: AxiosRequestConfig = {
       baseURL: `https://${this.hostname}`,

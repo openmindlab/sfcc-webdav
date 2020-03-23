@@ -44,11 +44,23 @@ export class Webdav {
     this.trace = false;
     this.axios = Axios.create();
     this.axios.interceptors.request.use(request => {
-      if (!this.trace) log('Starting Request: ', request)
+      if (this.trace) {
+        log(chalk.cyan('Sending Request:'));
+        log(chalk.cyan('baseUrl: '), request.baseURL);
+        log(chalk.cyan('url: '), request.url);
+        log(chalk.cyan('method: '), request.method);
+        log(chalk.cyan('headers: '), JSON.stringify(request.headers));
+        log(chalk.cyan('data: '), JSON.stringify(request.data));
+      }
       return request;
     })
-    this.axios.interceptors.request.use(response => {
-      if (!this.trace) log('Response: ', response)
+    this.axios.interceptors.response.use(response => {
+      if (this.trace) {
+        log(chalk.cyan('Sending Response:'));
+        log(chalk.cyan('Status: '), response.status);
+        log(chalk.cyan('Status Msg: '), response.statusText);
+        log(chalk.cyan('Response Data: '), JSON.stringify(response.data))
+      }
       return response;
     })
   }

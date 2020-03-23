@@ -131,7 +131,11 @@ export async function fileUpload(file: string, relativepath: string) {
   await webdav.fileUpload(file, relativepath);
 }
 
-
+/**
+ * Deletes a file via webdav
+ * @param {string} file Local file path
+ * @param {string} remote path, starting with '/cartridges'
+ */
 export async function fileDelete(file: string, relativepath: string) {
   await webdav.fileDelete(file, relativepath);
 }

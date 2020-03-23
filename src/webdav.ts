@@ -51,6 +51,12 @@ export class Webdav {
     this.codeVersion = dwJson?.['code-version'];
   }
 
+  toServerPath(file: string) {
+    let basepath = `/cartridges/${this.codeVersion}/`;
+    let cartridgepath = path.basename(file.substr(0, file.indexOf('/cartridge/'))) + file.substr(file.indexOf('/cartridge/'));
+    return `${basepath}${cartridgepath}`;
+  }
+
   async authorize() {
     if (!this.clientId) {
       error(chalk.red("Missing Client-id! Cannot make authorize request without it."));

@@ -26,21 +26,28 @@ export interface DwJson {
   'client-id'?: string,
   client_secret?: string,
   'client-secret'?: string,
-  hostname: string
+  hostname: string,
+  'code-version': string
 }
 export class Webdav {
-  private client_id: string;
-  private client_secret: string;
+  private clientId: string;
+  private clientSecret: string;
   private token: string;
   private trace: boolean;
   private hostname: string;
   Webdav: typeof Webdav;
+  private codeVersion: string;
   constructor(dwJson: DwJson) {
-    this.client_id = dwJson?.client_id || dwJson?.['client-id'];
-    this.client_secret = dwJson?.client_secret || dwJson?.['client-secret'];
-    this.hostname = dwJson?.hostname;
+    this.useDwJson(dwJson);
     this.token = undefined;
     this.trace = true;
+  }
+
+  useDwJson(dwJson: DwJson) {
+    this.clientId = dwJson?.client_id || dwJson?.['client-id'];
+    this.clientSecret = dwJson?.client_secret || dwJson?.['client-secret'];
+    this.hostname = dwJson?.hostname;
+    this.codeVersion = dwJson?.['code-version'];
   }
 
   async authorize() {
@@ -51,8 +58,8 @@ export class Webdav {
         'content-type': 'application/x-www-form-urlencoded'
       },
       auth: {
-        username: this.client_id,
-        password: this.client_secret
+        username: this.clientId,
+        password: this.clientSecret
       }
     });
     this.token = data.access_token;

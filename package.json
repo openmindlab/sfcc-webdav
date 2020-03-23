@@ -13,8 +13,8 @@
   "bugs": {
     "url": "https://github.com/openmindlab/sfcc-webdav/issues"
   },
-  "main": "webdav.ts",
-  "types": "webdav.d.ts",
+  "main": "./dist/webdav.js",
+  "types": "./dist/webdav.d.ts",
   "license": "MIT",
   "author": {
     "name": "Fabrizio Giustina"

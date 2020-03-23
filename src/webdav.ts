@@ -41,7 +41,16 @@ export class Webdav {
   constructor(dwJson: DwJson) {
     this.useDwJson(dwJson);
     this.token = undefined;
-    this.trace = true;
+    this.trace = false;
+    this.axios = Axios.create();
+    this.axios.interceptors.request.use(request => {
+      if (!this.trace) log('Starting Request: ', request)
+      return request;
+    })
+    this.axios.interceptors.request.use(response => {
+      if (!this.trace) log('Response: ', response)
+      return response;
+    })
   }
 
   useDwJson(dwJson: DwJson) {
@@ -83,10 +92,7 @@ export class Webdav {
 
   async sendRequest(options: AxiosRequestConfig, callback: Function) {
     try {
-      let { data, status, statusText } = await this.axios.request(options);
-      if (this.trace) console.debug(`On request data: ${data}`)
-      if (this.trace) console.debug(`On request status: ${status}`)
-      if (this.trace) console.debug(`On request status text: ${statusText}`)
+      let { data } = await this.axios.request(options);
       callback(data);
     } catch (err) {
       error(chalk.red('Error processing request:', err));
@@ -97,10 +103,7 @@ export class Webdav {
         options.headers.Authorization = `Bearer ${this.token}`;
       }
       try {
-        let { data, status, statusText } = await Axios.request(options);
-        if (this.trace) console.debug(`On request retry data: ${data}`)
-        if (this.trace) console.debug(`On request retry status: ${status}`)
-        if (this.trace) console.debug(`On request retry status text: ${statusText}`)
+        let { data } = await Axios.request(options);
         callback(data);
       } catch (innerErr) {
         error(chalk.red('Error processing retry:', err));

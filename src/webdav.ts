@@ -28,12 +28,13 @@ export interface DwJson {
   'client-secret'?: string,
   hostname: string
 }
-class Webdav {
+export class Webdav {
   private client_id: string;
   private client_secret: string;
   private token: string;
   private trace: boolean;
   private hostname: string;
+  Webdav: typeof Webdav;
   constructor(dwJson: DwJson) {
     this.client_id = dwJson?.client_id || dwJson?.['client-id'];
     this.client_secret = dwJson?.client_secret || dwJson?.['client-secret'];
@@ -67,10 +68,10 @@ class Webdav {
     } catch (err) {
       error(chalk.red('Error processing request:', err));
       if (options?.headers?.Authorization) {
-        if (this.trace) console.debug(`Expiring Token! ${webdavInstance.token}`)
-        await webdavInstance.authorize();
-        if (this.trace) console.debug(`New Token! ${webdavInstance.token}`)
-        options.headers.Authorization = `Bearer ${webdavInstance.token}`;
+        if (this.trace) console.debug(`Expiring Token! ${this.token}`)
+        await this.authorize();
+        if (this.trace) console.debug(`New Token! ${this.token}`)
+        options.headers.Authorization = `Bearer ${this.token}`;
       }
       try {
         let { data, status, statusText } = await Axios.request(options);
@@ -102,29 +103,35 @@ class Webdav {
       await this.sendRequest(options, () => log(chalk.cyan(`Uploaded ${relativepath}`)));
     })
   }
+
+  async fileDelete(file: string, relativepath: string) {
+    if (!this.token) await this.authorize();
+    const options: AxiosRequestConfig = {
+      baseURL: `https://${this.hostname}`,
+      url: `/on/demandware.servlet/webdav/Sites${relativepath}`,
+      headers: {
+        Authorization: `Bearer ${this.token}`
+      },
+      method: 'DELETE'
+    };
+    await this.sendRequest(options, () => log(chalk.cyan(`Deleted ${relativepath}`)));
+  }
 }
 
-const webdavInstance = new Webdav(getDwJson());
+const webdav = new Webdav(getDwJson());
+webdav.Webdav = Webdav;
+export default webdav;
 
-async function fileUpload(file: string, relativepath: string) {
-  await webdavInstance.fileUpload(file, relativepath);
+/**
+ * Upload a file via webdav
+ * @param {string} file Local file path
+ * @param {string} remote path, starting with '/cartridges'
+ */
+export async function fileUpload(file: string, relativepath: string) {
+  await webdav.fileUpload(file, relativepath);
 }
 
 
-async function fileDelete(file: string, relativepath: string) {
-  if (!webdavInstance.token) await webdavInstance.authorize();
-  const options: AxiosRequestConfig = {
-    baseURL: `https://${webdavInstance.hostname}`,
-    url: `/on/demandware.servlet/webdav/Sites${relativepath}`,
-    headers: {
-      Authorization: `Bearer ${webdavInstance.token}`
-    },
-    method: 'DELETE'
-  };
-  await webdavInstance.sendRequest(options, () => log(chalk.cyan(`Deleted ${relativepath}`)));
+export async function fileDelete(file: string, relativepath: string) {
+  await webdav.fileDelete(file, relativepath);
 }
-
-module.exports = {
-  fileUpload: fileUpload,
-  fileDelete: fileDelete
-};

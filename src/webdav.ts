@@ -30,12 +30,12 @@ export interface DwJson {
   'code-version': string
 }
 export class Webdav {
-  private clientId: string;
-  private clientSecret: string;
-  private token: string;
-  private trace: boolean;
-  private hostname: string;
-  private codeVersion: string;
+  clientId: string;
+  clientSecret: string;
+  token: string;
+  trace: boolean;
+  hostname: string;
+  codeVersion: string;
   axios: AxiosInstance;
   Webdav: typeof Webdav;
   constructor(dwJson: DwJson) {

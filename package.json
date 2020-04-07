@@ -13,8 +13,8 @@
   "bugs": {
     "url": "https://github.com/openmindlab/sfcc-webdav/issues"
   },
-  "main": "webdav.js",
-  "types": "webdav.d.ts",
+  "main": "./dist/webdav.js",
+  "types": "./dist/webdav.d.ts",
   "license": "MIT",
   "author": {
     "name": "Fabrizio Giustina"
@@ -23,23 +23,14 @@
     "node": ">=10.0.0"
   },
   "dependencies": {
-    "chalk": "2.4.2",
-    "request-promise-native": "1.0.7"
+    "@types/node": "13.9.2",
+    "axios": "0.19.2",
+    "chalk": "2.4.2"
   },
   "devDependencies": {
     "eslint": "6.0.1",
     "eslint-config-airbnb-base": "13.2.0",
     "eslint-config-prettier": "6.0.0",
-    "eslint-plugin-import": "2.18.0",
-    "eslint-plugin-jest": "22.9.0",
-    "eslint-plugin-mocha": "5.3.0",
-    "jest": "24.8.0",
-    "prettier-eslint": "9.0.0"
-  },
-  "jest": {
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      ".history/"
-    ]
+    "typescript": "3.8.3"
   }
 }

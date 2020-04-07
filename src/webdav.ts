@@ -1,11 +1,8 @@
 #!/usr/bin/env node
-/* eslint-disable camelcase */
-
-const path = require('path');
-const fs = require('fs');
-const chalk = require('chalk');
-// https://github.com/request/request/issues/3142
-// const request = require('request-promise-native');
+import path from 'path';
+import fs from 'fs';
+import chalk from 'chalk';
+import prettyBytes from 'pretty-bytes';
 import Axios, { AxiosRequestConfig, AxiosInstance } from 'axios';
 
 const cwd = process.cwd();
@@ -132,6 +129,7 @@ export class Webdav {
     if (!this.token) await this.authorize();
     const fileStream = fs.createReadStream(file);
     fileStream.on('error', (err: any) => error(`On Upload request of file ${file}, ReadStream Error: ${err}`));
+    const filesize = fs.statSync(file).size;
     await fileStream.on('ready', async () => {
       const options: AxiosRequestConfig = {
         baseURL: `https://${this.hostname}`,
@@ -142,7 +140,7 @@ export class Webdav {
         method: 'PUT',
         data: fileStream
       };
-      await this.sendRequest(options, () => log(chalk.cyan(`Uploaded ${relativepath}`)));
+      await this.sendRequest(options, () => log(chalk.cyan(`Uploaded ${relativepath} [${prettyBytes(filesize)}]`)));
     })
   }
 

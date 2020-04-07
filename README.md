@@ -65,6 +65,6 @@ sfccwebdav.fileDelete('/path/to/local/file', '/cartridges/mycodeversion/app_stor
 
 ## License
 
-Copyright (c) 2019 openmind
+Copyright (c) openmind
 
 Released under the MIT license.

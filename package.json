@@ -26,7 +26,10 @@
     "build": "tsc"
   },
   "files": [
-    "dist/**/*"
+    "dist/**/*",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "dependencies": {
     "@types/node": "13.11.0",

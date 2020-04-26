@@ -34,7 +34,7 @@
     "CHANGELOG.md"
   ],
   "dependencies": {
-    "@types/node": "13.11.0",
+    "@types/node": "13.13.3",
     "axios": "0.19.2",
     "chalk": "4.0.0",
     "pretty-bytes": "5.3.0"
@@ -42,7 +42,7 @@
   "devDependencies": {
     "eslint": "6.8.0",
     "eslint-config-airbnb-base": "14.1.0",
-    "eslint-config-prettier": "6.10.1",
+    "eslint-config-prettier": "6.11.0",
     "eslint-plugin-import": "2.20.2",
     "typescript": "3.8.3"
   }

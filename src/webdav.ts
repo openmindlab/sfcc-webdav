@@ -130,7 +130,7 @@ export class Webdav {
     const fileStream = fs.createReadStream(file);
     fileStream.on('error', (err: any) => error(`On Upload request of file ${file}, ReadStream Error: ${err}`));
     const filesize = fs.statSync(file).size;
-    await fileStream.on('ready', async () => {
+    fileStream.on('ready', async () => {
       const options: AxiosRequestConfig = {
         baseURL: `https://${this.hostname}`,
         url: `/on/demandware.servlet/webdav/Sites${relativepath}`,

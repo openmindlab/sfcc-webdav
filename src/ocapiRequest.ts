@@ -1,13 +1,18 @@
-enum methods {
+export enum OcapiRequestMethod {
   GET = 'GET',
   POST = 'POST',
   PATCH = 'PATCH',
   PUT = 'PUT',
   DELETE = 'DELETE',
 }
+export enum OcapiRequestType {
+  DATA = 'data',
+  SHOP = 'shop',
+}
 export interface OcapiRequestInterface {
   version: string;
   endpoint: string;
-  method: methods;
+  method: OcapiRequestMethod;
   body?: string;
+  type: OcapiRequestType;
 }

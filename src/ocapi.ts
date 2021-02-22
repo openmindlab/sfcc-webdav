@@ -43,6 +43,33 @@ export class Ocapi {
     this.hostname = dwJson?.hostname;
     this.codeVersion = dwJson?.['code-version'];
   }
+  async sendRequest(options: AxiosRequestConfig, callback?: Function) {
+    try {
+      let { data } = await this.axios.request(options);
+      if (callback) {
+        callback(data);
+      }
+      return data;
+    } catch (err) {
+      error(chalk.red('Error processing request:', err));
+      if (options?.headers?.Authorization) {
+        if (this.trace) console.debug(`Expiring Token! ${this.token}`);
+        await this.authorize();
+        if (this.trace) console.debug(`New Token! ${this.token}`);
+        options.headers.Authorization = `Bearer ${this.token}`;
+      }
+      try {
+        let { data } = await Axios.request(options);
+        if (callback) {
+          callback(data);
+        }
+        return data;
+      } catch (innerErr) {
+        error(chalk.red('Error processing retry:', err));
+        throw err;
+      }
+    }
+  }
   async authorize() {
     if (!this.clientId) {
       error(chalk.red('Missing Client-id! Cannot make authorize request without it.'));
@@ -64,6 +91,7 @@ export class Ocapi {
       },
     });
     this.token = data.access_token;
+    return this.token;
   }
 }
 export default Ocapi;

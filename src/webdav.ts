@@ -12,13 +12,6 @@ const cwd = process.cwd();
 const { log, error } = console;
 
 export class Webdav extends Ocapi {
-  clientId: string;
-  clientSecret: string;
-  token: string;
-  trace: boolean;
-  hostname: string;
-  codeVersion: string;
-  axios: AxiosInstance;
   Webdav: typeof Webdav;
   constructor(dwJson: DWJson) {
     super(dwJson);
@@ -28,28 +21,6 @@ export class Webdav extends Ocapi {
     let cartridgepath =
       path.basename(file.substr(0, file.indexOf('/cartridge/'))) + file.substr(file.indexOf('/cartridge/'));
     return `${basepath}${cartridgepath}`;
-  }
-
-  async sendRequest(options: AxiosRequestConfig, callback: Function) {
-    try {
-      let { data } = await this.axios.request(options);
-      callback(data);
-    } catch (err) {
-      error(chalk.red('Error processing request:', err));
-      if (options?.headers?.Authorization) {
-        if (this.trace) console.debug(`Expiring Token! ${this.token}`);
-        await this.authorize();
-        if (this.trace) console.debug(`New Token! ${this.token}`);
-        options.headers.Authorization = `Bearer ${this.token}`;
-      }
-      try {
-        let { data } = await Axios.request(options);
-        callback(data);
-      } catch (innerErr) {
-        error(chalk.red('Error processing retry:', err));
-        throw err;
-      }
-    }
   }
 
   async fileUpload(file: string, relativepath: string) {

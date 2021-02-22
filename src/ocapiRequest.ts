@@ -6,7 +6,8 @@ enum methods {
   DELETE = 'DELETE',
 }
 export interface OcapiRequestInterface {
-  version?: string;
+  version: string;
   endpoint: string;
   method: methods;
+  body?: string;
 }

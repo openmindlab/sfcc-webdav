@@ -1,14 +1,7 @@
 import chalk from 'chalk';
 import Axios, { AxiosRequestConfig, AxiosInstance } from 'axios';
+import { DWJson } from './dw';
 const { log, error } = console;
-export interface DWJson {
-  client_id?: string;
-  'client-id'?: string;
-  client_secret?: string;
-  'client-secret'?: string;
-  hostname: string;
-  'code-version': string;
-}
 export class Ocapi {
   clientId: string;
   clientSecret: string;

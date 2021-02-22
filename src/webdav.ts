@@ -3,22 +3,14 @@ import path from 'path';
 import fs from 'fs';
 import chalk from 'chalk';
 import prettyBytes from 'pretty-bytes';
-import { Ocapi, DWJson } from './ocapi';
+import { Ocapi } from './ocapi';
+import { getDwJson, DWJson } from './dw';
 import Axios, { AxiosRequestConfig, AxiosInstance } from 'axios';
 
 const cwd = process.cwd();
 
 const { log, error } = console;
 
-function getDwJson() {
-  let dwjsonpath = path.join(cwd, 'dw.json');
-  if (!fs.existsSync(dwjsonpath)) {
-    error(chalk.red(`Missing file ${dwjsonpath}\n`));
-    throw new Error(`Missing file ${dwjsonpath}`);
-  }
-  const dwjson = JSON.parse(fs.readFileSync(path.join(cwd, 'dw.json'), 'UTF-8'));
-  return dwjson;
-}
 export class Webdav extends Ocapi {
   clientId: string;
   clientSecret: string;

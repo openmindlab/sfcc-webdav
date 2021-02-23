@@ -1,7 +1,8 @@
 import path from 'path';
 import fs from 'fs';
 import chalk from 'chalk';
-import { getJSONParsedContent, writeJSONToFile } from './files';
+import { writeJSONToFile } from './files';
+import { getCurrentBranchName } from './git';
 const { log, error } = console;
 const cwd = process.cwd();
 const dwFile: string = 'dw.json';
@@ -30,7 +31,7 @@ export function getDwJson() {
 
 export async function setCodeVersion() {
   const dwConfig: DWJson = getDwJson();
-  dwConfig['code-version'] = gitUtils.getCurrentBranchName();
+  dwConfig['code-version'] = getCurrentBranchName();
   const writeDwJson: boolean = await writeJSONToFile(path.resolve(process.cwd(), dwFile), dwConfig);
   const textEmoji: string = String.fromCodePoint(0x1f9ea);
   console.log(`${textEmoji} updated code version in ${chalk.bold.white.bgGreen(dwConfig['code-version'])}`);

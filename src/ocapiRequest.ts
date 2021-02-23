@@ -10,9 +10,9 @@ export enum OcapiRequestType {
   SHOP = 'shop',
 }
 export interface OcapiRequestInterface {
-  version: string;
+  version?: string;
   endpoint: string;
-  method: OcapiRequestMethod;
-  body?: string;
-  type: OcapiRequestType;
+  method?: OcapiRequestMethod;
+  body?: any;
+  type?: OcapiRequestType;
 }

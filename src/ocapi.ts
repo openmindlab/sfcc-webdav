@@ -1,7 +1,6 @@
 import chalk from 'chalk';
 import Axios, { AxiosRequestConfig, AxiosInstance } from 'axios';
 import { DWJson } from './dw';
-const { log, error } = console;
 export class Ocapi {
   clientId: string;
   clientSecret: string;
@@ -18,24 +17,35 @@ export class Ocapi {
     this.axios = Axios.create();
     this.axios.interceptors.request.use((request) => {
       if (this.trace) {
-        log(chalk.cyan('Sending Request:'));
-        log(chalk.cyan('baseUrl: '), request.baseURL);
-        log(chalk.cyan('url: '), request.url);
-        log(chalk.cyan('method: '), request.method);
-        log(chalk.cyan('headers: '), JSON.stringify(request.headers));
-        log(chalk.cyan('data: '), JSON.stringify(request.data));
+        console.log(`
+          ${chalk.cyan('Sending Request:')}\n
+          ${(chalk.cyan('baseUrl: '), request.baseURL)}\n
+          ${(chalk.cyan('url: '), request.url)}\n
+          ${(chalk.cyan('method: '), request.method)}\n
+          ${(chalk.cyan('headers: '), JSON.stringify(request.headers))}\n
+          ${(chalk.cyan('data: '), JSON.stringify(request.data))}
+        `);
       }
       return request;
     });
     this.axios.interceptors.response.use((response) => {
       if (this.trace) {
-        log(chalk.cyan('Sending Response:'));
-        log(chalk.cyan('Status: '), response.status);
-        log(chalk.cyan('Status Msg: '), response.statusText);
-        log(chalk.cyan('Response Data: '), JSON.stringify(response.data));
+        console.log(`
+          ${chalk.cyan('Sending Response:')}\n
+          ${(chalk.cyan('Status: '), response.status)}\n
+          ${(chalk.cyan('Status Msg: '), response.statusText)}\n
+          ${(chalk.cyan('Response Data: '), JSON.stringify(response.data))}
+        `);
       }
       return response;
     });
+  }
+  async checkup() {
+    if (!this.hostname) {
+      console.error(chalk.red('Missing hostname! Cannot make create a request without it.'));
+      throw 'Missing hostname';
+    }
+    if (!this.token) await this.authorize();
   }
   useDwJson(dwJson: DWJson) {
     this.clientId = dwJson?.client_id || dwJson?.['client-id'];
@@ -44,6 +54,7 @@ export class Ocapi {
     this.codeVersion = dwJson?.['code-version'];
   }
   async sendRequest(options: AxiosRequestConfig, callback?: Function) {
+    await this.checkup();
     try {
       let { data } = await this.axios.request(options);
       if (callback) {
@@ -51,7 +62,7 @@ export class Ocapi {
       }
       return data;
     } catch (err) {
-      error(chalk.red('Error processing request:', err));
+      console.error(chalk.red('Error processing request:', err));
       if (options?.headers?.Authorization) {
         if (this.trace) console.debug(`Expiring Token! ${this.token}`);
         await this.authorize();
@@ -65,18 +76,18 @@ export class Ocapi {
         }
         return data;
       } catch (innerErr) {
-        error(chalk.red('Error processing retry:', err));
+        console.error(chalk.red('Error processing retry:', err));
         throw err;
       }
     }
   }
   async authorize() {
     if (!this.clientId) {
-      error(chalk.red('Missing Client-id! Cannot make authorize request without it.'));
+      console.error(chalk.red('Missing Client-id! Cannot make authorize request without it.'));
       throw 'Missing Client-id';
     }
     if (!this.clientSecret) {
-      error(chalk.red('Missing Client-secret! Cannot make authorize request without it.'));
+      console.error(chalk.red('Missing Client-secret! Cannot make authorize request without it.'));
       throw 'Missing Client-secret';
     }
     const { data } = await this.axios.request({

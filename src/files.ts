@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+import fs, { ReadStream } from 'fs-extra';
 import path from 'path';
 
 /**
@@ -115,4 +115,22 @@ export function listFiles(dir: string): Array<string> {
   });
 
   return results;
+}
+
+/**
+ * Return the stream for given file
+ * @param {String} filePath
+ * @returns {Promise<ReadStream>}
+ */
+export function readStream(filePath: string): Promise<ReadStream> {
+  return new Promise((resolve, reject) => {
+    const fileStream: ReadStream = fs.createReadStream(filePath);
+    fileStream.on('error', (err: any) => {
+      console.error(`On Upload request of file ${filePath}, ReadStream Error: ${err}`);
+      reject(err);
+    });
+    fileStream.on('ready', async () => {
+      resolve(fileStream);
+    });
+  });
 }

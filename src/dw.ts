@@ -3,7 +3,6 @@ import fs from 'fs';
 import chalk from 'chalk';
 import { writeJSONToFile } from './files';
 import { getCurrentBranchName } from './git';
-const { log, error } = console;
 const cwd = process.cwd();
 const dwFile: string = 'dw.json';
 
@@ -22,7 +21,7 @@ export interface DWJson {
 export function getDwJson() {
   let dwjsonpath: string = path.join(cwd, dwFile);
   if (!fs.existsSync(dwjsonpath)) {
-    error(chalk.red(`Missing file ${dwjsonpath}\n`));
+    console.error(chalk.red(`Missing file ${dwjsonpath}\n`));
     throw new Error(`Missing file ${dwjsonpath}`);
   }
   const dwjson: DWJson = JSON.parse(fs.readFileSync(path.join(cwd, dwFile), 'UTF-8'));

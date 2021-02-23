@@ -1,16 +1,12 @@
 #!/usr/bin/env node
 import path from 'path';
-import fs from 'fs';
+import fs, { ReadStream } from 'fs';
 import chalk from 'chalk';
 import prettyBytes from 'pretty-bytes';
 import { Ocapi } from './ocapi';
 import { getDwJson, DWJson } from './dw';
-import Axios, { AxiosRequestConfig, AxiosInstance } from 'axios';
-
-const cwd = process.cwd();
-
-const { log, error } = console;
-
+import { readStream } from './files';
+import { AxiosRequestConfig } from 'axios';
 export class Webdav extends Ocapi {
   Webdav: typeof Webdav;
   constructor(dwJson: DWJson) {
@@ -22,36 +18,27 @@ export class Webdav extends Ocapi {
       path.basename(file.substr(0, file.indexOf('/cartridge/'))) + file.substr(file.indexOf('/cartridge/'));
     return `${basepath}${cartridgepath}`;
   }
-
-  async fileUpload(file: string, relativepath: string) {
-    if (!this.hostname) {
-      error(chalk.red('Missing hostname! Cannot make create a request without it.'));
-      throw 'Missing hostname';
+  async fileUpload(file: string, relativepath: string, callback?: Function) {
+    const fileStream: ReadStream = await readStream(file);
+    const filesize: number = fs.statSync(file).size;
+    const options: AxiosRequestConfig = {
+      baseURL: `https://${this.hostname}`,
+      url: `/on/demandware.servlet/webdav/Sites${relativepath}`,
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+      method: 'PUT',
+      data: fileStream,
+    };
+    const response = await this.sendRequest(options, () =>
+      console.log(chalk.cyan(`Uploaded ${relativepath} [${prettyBytes(filesize)}]`))
+    );
+    if (callback) {
+      callback(response);
     }
-    if (!this.token) await this.authorize();
-    const fileStream = fs.createReadStream(file);
-    fileStream.on('error', (err: any) => error(`On Upload request of file ${file}, ReadStream Error: ${err}`));
-    const filesize = fs.statSync(file).size;
-    fileStream.on('ready', async () => {
-      const options: AxiosRequestConfig = {
-        baseURL: `https://${this.hostname}`,
-        url: `/on/demandware.servlet/webdav/Sites${relativepath}`,
-        headers: {
-          Authorization: `Bearer ${this.token}`,
-        },
-        method: 'PUT',
-        data: fileStream,
-      };
-      await this.sendRequest(options, () => log(chalk.cyan(`Uploaded ${relativepath} [${prettyBytes(filesize)}]`)));
-    });
+    return response;
   }
-
-  async fileDelete(file: string, relativepath: string) {
-    if (!this.hostname) {
-      error(chalk.red('Missing hostname! Cannot make create a request without it.'));
-      throw 'Missing hostname';
-    }
-    if (!this.token) await this.authorize();
+  async fileDelete(file: string, relativepath: string, callback?: Function) {
     const options: AxiosRequestConfig = {
       baseURL: `https://${this.hostname}`,
       url: `/on/demandware.servlet/webdav/Sites${relativepath}`,
@@ -60,7 +47,11 @@ export class Webdav extends Ocapi {
       },
       method: 'DELETE',
     };
-    await this.sendRequest(options, () => log(chalk.cyan(`Deleted ${relativepath}`)));
+    const response = await this.sendRequest(options, () => console.log(chalk.cyan(`Deleted ${relativepath}`)));
+    if (callback) {
+      callback(response);
+    }
+    return response;
   }
 }
 
@@ -73,8 +64,8 @@ export default webdav;
  * @param {string} file Local file path
  * @param {string} remote path, starting with '/cartridges'
  */
-export async function fileUpload(file: string, relativepath: string) {
-  await webdav.fileUpload(file, relativepath);
+export async function fileUpload(file: string, relativepath: string, callback?: Function) {
+  await webdav.fileUpload(file, relativepath, callback);
 }
 
 /**
@@ -82,6 +73,6 @@ export async function fileUpload(file: string, relativepath: string) {
  * @param {string} file Local file path
  * @param {string} remote path, starting with '/cartridges'
  */
-export async function fileDelete(file: string, relativepath: string) {
-  await webdav.fileDelete(file, relativepath);
+export async function fileDelete(file: string, relativepath: string, callback?: Function) {
+  await webdav.fileDelete(file, relativepath, callback);
 }

@@ -3,18 +3,16 @@ import { AxiosRequestConfig } from 'axios';
 import Ocapi from './ocapi';
 import { getDwJson, DWJson } from './dw';
 import { OcapiRequestInterface, OcapiRequestType, OcapiRequestMethod } from './ocapiRequest';
-const { error } = console;
 export class OcapiClient extends Ocapi {
   OcapiClient: typeof OcapiClient;
   constructor(dwJson: DWJson) {
     super(dwJson);
   }
-  private async requestBuilder(requestOption: OcapiRequestInterface) {
-    if (!this.hostname) {
-      error(chalk.red('Missing hostname! Cannot make create a request without it.'));
-      throw 'Missing hostname';
-    }
+  async checkup() {
+    super.checkup();
     if (!this.token) await this.authorize();
+  }
+  private async requestBuilder(requestOption: OcapiRequestInterface): Promise<AxiosRequestConfig> {
     const axiosOptions: AxiosRequestConfig = {
       baseURL: `https://${this.hostname}`,
       url: `s/-/dw/${requestOption.type ? requestOption.type : OcapiRequestType.DATA}/v${
@@ -33,7 +31,7 @@ export class OcapiClient extends Ocapi {
   async dataRequest(requestOption: OcapiRequestInterface, callback?: Function) {
     const options = requestOption;
     options.type = OcapiRequestType.DATA;
-    const axiosOptions = await this.requestBuilder(options);
+    const axiosOptions: AxiosRequestConfig = await this.requestBuilder(options);
     const response = await this.sendRequest(axiosOptions);
     if (callback) {
       callback();
@@ -43,7 +41,7 @@ export class OcapiClient extends Ocapi {
   async shopRequest(requestOption: OcapiRequestInterface, callback?: Function) {
     const options = requestOption;
     options.type = OcapiRequestType.SHOP;
-    const axiosOptions = await this.requestBuilder(options);
+    const axiosOptions: AxiosRequestConfig = await this.requestBuilder(options);
     const response = await this.sendRequest(axiosOptions);
     if (callback) {
       callback();

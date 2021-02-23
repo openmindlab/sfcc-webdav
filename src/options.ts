@@ -1,0 +1,71 @@
+export default {
+  options: [
+    {
+      option: 'compileCode',
+      alias: 'b',
+      type: 'String',
+      description: 'Compile and bundle the frontend files',
+      enum: ['scss', 'js', 'fonts'],
+    },
+    {
+      option: 'mode',
+      type: 'String',
+      alias: 'm',
+      description: 'Webpack compile mode',
+      enum: ['production', 'development'],
+    },
+    {
+      option: 'createPackage',
+      alias: 'c',
+      type: 'String',
+      description: 'Create the zip files to deploy/import to the sandbox',
+      enum: ['meta', 'demo', 'code', 'template'],
+    },
+    {
+      option: 'deploy',
+      alias: 'd',
+      dependsOn: 'createPackage',
+      type: 'Boolean',
+      description: 'Deploy the selected configuration or code version to the sandbox',
+    },
+    {
+      option: 'watch',
+      alias: 'w',
+      type: 'Boolean',
+      description: 'Watch files and upload via webdav',
+    },
+    {
+      option: 'updateversion',
+      type: 'Boolean',
+      description: `Update 'dw.json' code version based on branch name`,
+    },
+    {
+      option: 'usepackagejsonversion',
+      type: 'Boolean',
+      description: `Use 'package.json' version instead of 'dw.json' one`,
+    },
+    {
+      option: 'help',
+      alias: 'h',
+      type: 'Boolean',
+      description: 'Display help guide',
+    },
+    {
+      option: 'images',
+      alias: 'i',
+      type: 'Boolean',
+      description: 'Upload catalog images',
+    },
+  ],
+  mutuallyExclusive: [
+    'integration',
+    'test',
+    'upload',
+    'uploadCartridge',
+    'compile',
+    'lint',
+    'createCartridge',
+    'watch',
+    'onlycompile',
+  ],
+};

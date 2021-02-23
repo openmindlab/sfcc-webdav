@@ -1,5 +1,5 @@
-import fs, { ReadStream } from 'fs-extra';
-import path from 'path';
+import fs, { ReadStream } from "fs-extra";
+import path from "path";
 
 /**
  * Create folder if not exists
@@ -37,10 +37,10 @@ export async function checkForFile(fileName: string): Promise<boolean> {
 export async function getFileContent(fileName: string): Promise<string> {
   const missingError: string = `The file '${fileName}' is missing in given path`;
   if (await checkForFile(fileName)) {
-    return await fs.readFile(fileName, { encoding: 'utf8' });
+    return await fs.readFile(fileName, { encoding: "utf8" });
   } else {
     console.error(missingError);
-    return '';
+    return "";
   }
 }
 
@@ -59,7 +59,10 @@ export async function getJSONParsedContent(filePath: string): Promise<boolean> {
  * @param {String} filePath
  * @returns {Promise<Boolean>}
  */
-export async function writeJSONToFile(filePath: string, object: object): Promise<boolean> {
+export async function writeJSONToFile(
+  filePath: string,
+  object: object
+): Promise<boolean> {
   await fs.outputFile(filePath, JSON.stringify(object, null, 2));
   return true;
 }
@@ -69,7 +72,10 @@ export async function writeJSONToFile(filePath: string, object: object): Promise
  * @param {String} filePath
  * @returns {Promise<Boolean>}
  */
-export async function writeToPlainFile(filePath: string, content: any): Promise<boolean> {
+export async function writeToPlainFile(
+  filePath: string,
+  content: any
+): Promise<boolean> {
   await fs.outputFile(filePath, String(content));
   return true;
 }
@@ -80,15 +86,18 @@ export async function writeToPlainFile(filePath: string, content: any): Promise<
  * @param {String} destination
  * @returns {Promise<Boolean>}
  */
-export async function copy(source: string, destination: string): Promise<boolean> {
+export async function copy(
+  source: string,
+  destination: string
+): Promise<boolean> {
   if (await checkForFile(source)) {
     await createFolderIfNotExists(destination);
     const sourceStat = await fs.lstat(source);
-    const sourceType = sourceStat.isFile() ? 'file' : 'directory';
-    if (sourceType === 'file') {
+    const sourceType = sourceStat.isFile() ? "file" : "directory";
+    if (sourceType === "file") {
       await fs.copy(source, `${destination}/${path.basename(source)}`);
       return true;
-    } else if (sourceType === 'directory') {
+    } else if (sourceType === "directory") {
       await fs.copy(source, `${destination}/`);
       return true;
     }
@@ -125,12 +134,27 @@ export function listFiles(dir: string): Array<string> {
 export function readStream(filePath: string): Promise<ReadStream> {
   return new Promise((resolve, reject) => {
     const fileStream: ReadStream = fs.createReadStream(filePath);
-    fileStream.on('error', (err: any) => {
-      console.error(`On Upload request of file ${filePath}, ReadStream Error: ${err}`);
+    fileStream.on("error", (err: any) => {
+      console.error(
+        `On Upload request of file ${filePath}, ReadStream Error: ${err}`
+      );
       reject(err);
     });
-    fileStream.on('ready', async () => {
+    fileStream.on("ready", async () => {
       resolve(fileStream);
     });
   });
+}
+
+export async function rename(
+  source: string,
+  newname: string
+): Promise<boolean> {
+  try {
+    await fs.rename(source, newname);
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
 }

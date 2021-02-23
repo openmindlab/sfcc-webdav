@@ -1,16 +1,16 @@
-import path from 'path';
-import fs from 'fs';
-import chalk from 'chalk';
-import { writeJSONToFile } from './files';
-import { getCurrentBranchName } from './git';
+import path from "path";
+import fs from "fs";
+import chalk from "chalk";
+import { writeJSONToFile } from "./files";
+import { getCurrentBranchName } from "./git";
 const cwd = process.cwd();
-const dwFile: string = 'dw.json';
+const dwFile: string = "dw.json";
 
 export interface DWJson {
   client_id: string;
   client_secret: string;
   hostname: string;
-  'code-version': string;
+  "code-version": string;
 }
 
 /**
@@ -19,18 +19,27 @@ export interface DWJson {
 export function getDwJson() {
   let dwjsonpath: string = path.join(cwd, dwFile);
   if (!fs.existsSync(dwjsonpath)) {
-    console.error(chalk.red(`Missing file ${dwjsonpath}\n`));
-    throw new Error(`Missing file ${dwjsonpath}`);
+    throw new Error(`Missing 'dw.json' file`);
+  } else {
+    const dwjson: DWJson = JSON.parse(
+      fs.readFileSync(path.join(cwd, dwFile), "UTF-8")
+    );
+    return dwjson;
   }
-  const dwjson: DWJson = JSON.parse(fs.readFileSync(path.join(cwd, dwFile), 'UTF-8'));
-  return dwjson;
 }
 
 export async function setCodeVersion() {
   const dwConfig: DWJson = getDwJson();
-  dwConfig['code-version'] = getCurrentBranchName();
-  const writeDwJson: boolean = await writeJSONToFile(path.resolve(process.cwd(), dwFile), dwConfig);
+  dwConfig["code-version"] = getCurrentBranchName();
+  const writeDwJson: boolean = await writeJSONToFile(
+    path.resolve(process.cwd(), dwFile),
+    dwConfig
+  );
   const textEmoji: string = String.fromCodePoint(0x1f9ea);
-  console.log(`${textEmoji} updated code version in ${chalk.bold.white.bgGreen(dwConfig['code-version'])}`);
+  console.log(
+    `${textEmoji} updated code version in ${chalk.bold.white.bgGreen(
+      dwConfig["code-version"]
+    )}`
+  );
   return writeDwJson;
 }

@@ -1,5 +1,6 @@
 import path from "path";
 import fs from "fs";
+import * as fileUtils from "./files";
 import chalk from "chalk";
 import { writeJSONToFile } from "./files";
 import { getCurrentBranchName } from "./git";
@@ -16,8 +17,8 @@ export interface DWJson {
 /**
  * @returns {DWJson} dw.json content
  */
-export function getDwJson() {
-  let dwjsonpath: string = path.join(cwd, dwFile);
+export function getDwJson(): DWJson {
+  let dwjsonpath: string = path.resolve(cwd, dwFile);
   if (!fs.existsSync(dwjsonpath)) {
     throw new Error(`Missing 'dw.json' file`);
   } else {

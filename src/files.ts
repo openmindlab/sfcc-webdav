@@ -49,7 +49,7 @@ export async function getFileContent(fileName: string): Promise<string> {
  * @param {String} filePath
  * @returns {Promise<Object>}
  */
-export async function getJSONParsedContent(filePath: string): Promise<boolean> {
+export async function getJSONParsedContent(filePath: string): Promise<any> {
   return await fs.readJson(filePath);
 }
 

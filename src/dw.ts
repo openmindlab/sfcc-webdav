@@ -7,10 +7,8 @@ const cwd = process.cwd();
 const dwFile: string = 'dw.json';
 
 export interface DWJson {
-  client_id?: string;
-  'client-id'?: string;
-  client_secret?: string;
-  'client-secret'?: string;
+  client_id: string;
+  client_secret: string;
   hostname: string;
   'code-version': string;
 }

@@ -21,11 +21,19 @@
       "cwd": "${workspaceRoot}",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run-script", "test"],
-      "runtimeVersion": "14.16.0",
-      "resolveSourceMapLocations": [
-        "${workspaceFolder}/**",
-        "!**/node_modules/**"
-      ]
+      "runtimeVersion": "14.5.0",
+      "port": 5858
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Typescript",
+      "program": "${workspaceFolder}/app.ts",
+      "preLaunchTask": "npm: build",
+      "sourceMaps": true,
+      "smartStep": true,
+      "internalConsoleOptions": "openOnSessionStart",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"]
     }
   ]
 }

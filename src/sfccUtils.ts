@@ -25,7 +25,7 @@ export class SFCCUtils extends OcapiClient {
   }
   async upload(filePath: string, callback?: Function) {
     try {
-      const fileStream: ReadStream = await readStream(filePath);
+      const fileStream = await readStream(filePath);
       const options: AxiosRequestConfig = {
         baseURL: `https://${this.hostname}`,
         url: `/on/demandware.servlet/webdav/Sites/impex/src/instance`,

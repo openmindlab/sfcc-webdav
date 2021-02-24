@@ -129,19 +129,16 @@ export function listFiles(dir: string): Array<string> {
 /**
  * Return the stream for given file
  * @param {String} filePath
- * @returns {Promise<ReadStream>}
+ * @returns ReadStream
  */
-export function readStream(filePath: string): Promise<ReadStream> {
+export async function readStream(filePath: string): Promise<ReadStream> {
   return new Promise((resolve, reject) => {
-    const fileStream: ReadStream = fs.createReadStream(filePath);
-    fileStream.on('error', (err: any) => {
-      console.error(
-        `On Upload request of file ${filePath}, ReadStream Error: ${err}`
-      );
-      reject(err);
+    const stream: ReadStream = fs.createReadStream(path.resolve(filePath));
+    stream.on('error', () => {
+      reject(`Error reading file stream for '${filePath}'`);
     });
-    fileStream.on('ready', async () => {
-      resolve(fileStream);
+    stream.on('readable', () => {
+      resolve(stream);
     });
   });
 }

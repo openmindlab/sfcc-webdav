@@ -1,15 +1,9 @@
-const { SFCCUtils } = require('./dist/sfccUtils');
-
-async function testCall() {
-  /* const ocapiClient = require('./dist/ocapiClient');
-  const response = await ocapiClient.dataRequest({
-    version: '21_3',
-    endpoint: 'code_versions',
-  });
-  console.log(response); */
-  /* const sfccUtils = require('./dist/sfccUtils').SFCCUtils;
-  const client = new SFCCUtils();
-  const response = await client.import('metadata.zip');
-  const poppo = ''; */
+const fileUtils = require('./dist/files');
+async function test() {
+  try {
+    const stream = await fileUtils.readStream('./openmind-x.svg');
+  } catch (e) {
+    console.error('xxxxx');
+  }
 }
-testCall();
+test();

@@ -20,7 +20,7 @@ export class Webdav extends Ocapi {
     return `${basepath}${cartridgepath}`;
   }
   async fileUpload(file: string, relativepath: string, callback?: Function) {
-    const fileStream: ReadStream = await readStream(file);
+    const fileStream = await readStream(file);
     const filesize: number = fs.statSync(file).size;
     const options: AxiosRequestConfig = {
       baseURL: `https://${this.hostname}`,

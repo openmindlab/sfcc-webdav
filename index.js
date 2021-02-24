@@ -1,9 +1,10 @@
-const fileUtils = require('./dist/files');
+function otherMetod() {
+  const { exec } = require('child_process');
+  exec('git name-rev --name-only HEAD', (err, stdout, stderr) => {
+    return stdout;
+  });
+}
 async function test() {
-  try {
-    const stream = await fileUtils.readStream('./openmind-x.svg');
-  } catch (e) {
-    console.error('xxxxx');
-  }
+  otherMetod();
 }
 test();

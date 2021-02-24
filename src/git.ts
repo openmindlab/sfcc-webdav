@@ -1,17 +1,21 @@
 import slugify from 'slugify';
-import childProcess from 'child_process';
+import fs from 'fs';
+import path from 'path';
 /**
  * @returns {String} the current branch name as slug
  */
-export function getCurrentBranchName(): string {
-  const ret = childProcess.spawnSync('git', [
-    'symbolic-ref',
-    'HEAD',
-    '--short'
-  ]);
-  if (ret.status > 0) throw ret.error;
-  const branchName: string = ret.stdout.toString().trim().replace('/', '-');
-  return slugify(branchName, {
+export function getCurrentBranchName(folder?: string): string {
+  const cwd: string = process.cwd();
+  const gitHeadPath = `${process.cwd()}/.git/HEAD`;
+  const startBranchName: string = fs.existsSync(gitHeadPath)
+    ? fs
+        .readFileSync(gitHeadPath, 'utf-8')
+        .trim()
+        .split('/')
+        .splice(2)
+        .join('-')
+    : getCurrentBranchName(path.resolve(cwd, '..'));
+  return slugify(startBranchName, {
     lower: true,
     remove: /[*+~.()'"!:@\/]/g,
     strict: true

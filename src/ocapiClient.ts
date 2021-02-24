@@ -1,16 +1,15 @@
-import chalk from 'chalk';
 import { AxiosRequestConfig } from 'axios';
 import Ocapi from './ocapi';
-import { getDwJson, DWJson } from './dw';
 import {
   OcapiRequestInterface,
   OcapiRequestType,
-  OcapiRequestMethod
-} from './ocapiRequest';
+  OcapiRequestMethod,
+  OcapiDefaultVersion
+} from './ocapiSettings';
 export class OcapiClient extends Ocapi {
   OcapiClient: typeof OcapiClient;
-  constructor(dwJson: DWJson) {
-    super(dwJson);
+  constructor() {
+    super();
   }
   async checkup() {
     super.checkup();
@@ -23,9 +22,9 @@ export class OcapiClient extends Ocapi {
       baseURL: `https://${this.hostname}`,
       url: `s/-/dw/${
         requestOption.type ? requestOption.type : OcapiRequestType.DATA
-      }/v${requestOption.version ? requestOption.version : '19_5'}/${
-        requestOption.endpoint
-      }`,
+      }/v${
+        requestOption.version ? requestOption.version : OcapiDefaultVersion
+      }/${requestOption.endpoint}`,
       headers: {
         Authorization: `Bearer ${this.token}`
       },
@@ -60,7 +59,7 @@ export class OcapiClient extends Ocapi {
   }
 }
 
-const client = new OcapiClient(getDwJson());
+const client = new OcapiClient();
 export default client;
 
 export async function dataRequest(

@@ -1,29 +1,35 @@
 import chalk from 'chalk';
 import Axios, { AxiosRequestConfig, AxiosInstance } from 'axios';
-import { DWJson } from './dw';
+import { DWJson, getDwJson } from './dw';
+import { OcapiRequestMethod, OcapiRequestContentType } from './ocapiSettings';
+//process.env.NODE_ENV !== 'production'
 export class Ocapi {
   clientId: string;
   clientSecret: string;
   token: string;
-  trace: boolean;
+  trace: boolean = true;
   hostname: string;
   codeVersion: string;
   axios: AxiosInstance;
   Ocapi: typeof Ocapi;
-  constructor(dwJson: DWJson) {
-    this.useDwJson(dwJson);
+  constructor() {
+    const dwJSON: DWJson = getDwJson();
+    this.useDwJson(dwJSON);
     this.token = undefined;
-    this.trace = false;
     this.axios = Axios.create();
     this.axios.interceptors.request.use((request) => {
       if (this.trace) {
         console.log(`
-          ${chalk.cyan('Sending Request:')}\n
-          ${(chalk.cyan('baseUrl: '), request.baseURL)}\n
-          ${(chalk.cyan('url: '), request.url)}\n
-          ${(chalk.cyan('method: '), request.method)}\n
-          ${(chalk.cyan('headers: '), JSON.stringify(request.headers))}\n
-          ${(chalk.cyan('data: '), JSON.stringify(request.data))}
+          ${chalk.cyan('---Sending Request---')}\n
+          ${
+            request.baseURL
+              ? chalk.cyan('baseUrl: ') + request.baseURL + '\n'
+              : ''
+          }
+          ${chalk.cyan('url: ') + request.url}\n
+          ${chalk.cyan('method: ') + request.method}\n
+          ${chalk.cyan('headers: ') + JSON.stringify(request.headers)}\n
+          ${chalk.cyan('data: ') + JSON.stringify(request.data)}
         `);
       }
       return request;
@@ -32,9 +38,9 @@ export class Ocapi {
       if (this.trace) {
         console.log(`
           ${chalk.cyan('Sending Response:')}\n
-          ${(chalk.cyan('Status: '), response.status)}\n
-          ${(chalk.cyan('Status Msg: '), response.statusText)}\n
-          ${(chalk.cyan('Response Data: '), JSON.stringify(response.data))}
+          ${chalk.cyan('Status: ') + response.status}\n
+          ${chalk.cyan('Status Msg: ') + response.statusText}\n
+          ${chalk.cyan('Response Data: ') + JSON.stringify(response.data)}
         `);
       }
       return response;
@@ -83,29 +89,22 @@ export class Ocapi {
       }
     }
   }
-  async authorize() {
+  async authorize(): Promise<string> {
     if (!this.clientId) {
-      console.error(
-        chalk.red(
-          'Missing Client-id! Cannot make authorize request without it.'
-        )
+      throw new Error(
+        'Missing Client-id! Cannot make authorize request without it.'
       );
-      throw 'Missing Client-id';
     }
     if (!this.clientSecret) {
-      console.error(
-        chalk.red(
-          'Missing Client-secret! Cannot make authorize request without it.'
-        )
-      );
-      throw 'Missing Client-secret';
+      throw new Error('Missing Client-secret');
     }
+    const authURL: string =
+      'https://account.demandware.com/dw/oauth2/access_token?grant_type=client_credentials';
     const { data } = await this.axios.request({
-      url:
-        'https://account.demandware.com/dw/oauth2/access_token?grant_type=client_credentials',
-      method: 'post',
+      url: authURL,
+      method: OcapiRequestMethod.POST,
       headers: {
-        'content-type': 'application/x-www-form-urlencoded'
+        'content-type': OcapiRequestContentType.APPLICATION_URL_ENCODED
       },
       auth: {
         username: this.clientId,

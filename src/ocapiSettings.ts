@@ -16,3 +16,8 @@ export interface OcapiRequestInterface {
   body?: any;
   type?: OcapiRequestType;
 }
+export enum OcapiRequestContentType {
+  APPLICATION_URL_ENCODED = 'application/x-www-form-urlencoded'
+}
+export const OcapiDefaultVersion: string = '19_5';
+export const OcapiProtocol: string = 'https';

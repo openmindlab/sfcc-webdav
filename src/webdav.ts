@@ -4,13 +4,14 @@ import fs, { ReadStream } from 'fs';
 import chalk from 'chalk';
 import prettyBytes from 'pretty-bytes';
 import { Ocapi } from './ocapi';
-import { getDwJson, DWJson } from './dw';
 import { readStream } from './files';
 import { AxiosRequestConfig } from 'axios';
+import { OcapiRequestMethod, OcapiProtocol } from './ocapiSettings';
 export class Webdav extends Ocapi {
   Webdav: typeof Webdav;
-  constructor(dwJson: DWJson) {
-    super(dwJson);
+  webdavPath: string = '/on/demandware.servlet/webdav/Sites';
+  constructor() {
+    super();
   }
   toServerPath(file: string) {
     let basepath = `/cartridges/${this.codeVersion}/`;
@@ -20,15 +21,15 @@ export class Webdav extends Ocapi {
     return `${basepath}${cartridgepath}`;
   }
   async fileUpload(file: string, relativepath: string, callback?: Function) {
-    const fileStream = await readStream(file);
+    const fileStream: ReadStream = await readStream(file);
     const filesize: number = fs.statSync(file).size;
     const options: AxiosRequestConfig = {
-      baseURL: `https://${this.hostname}`,
-      url: `/on/demandware.servlet/webdav/Sites${relativepath}`,
+      baseURL: `${OcapiProtocol}://${this.hostname}`,
+      url: `${this.webdavPath}${relativepath}`,
       headers: {
         Authorization: `Bearer ${this.token}`
       },
-      method: 'PUT',
+      method: OcapiRequestMethod.PUT,
       data: fileStream
     };
     const response = await this.sendRequest(options, () =>
@@ -43,12 +44,12 @@ export class Webdav extends Ocapi {
   }
   async fileDelete(file: string, relativepath: string, callback?: Function) {
     const options: AxiosRequestConfig = {
-      baseURL: `https://${this.hostname}`,
-      url: `/on/demandware.servlet/webdav/Sites${relativepath}`,
+      baseURL: `${OcapiProtocol}://${this.hostname}`,
+      url: `${this.webdavPath}${relativepath}`,
       headers: {
         Authorization: `Bearer ${this.token}`
       },
-      method: 'DELETE'
+      method: OcapiRequestMethod.DELETE
     };
     const response = await this.sendRequest(options, () =>
       console.log(chalk.cyan(`Deleted ${relativepath}`))
@@ -60,7 +61,7 @@ export class Webdav extends Ocapi {
   }
 }
 
-const webdav = new Webdav(getDwJson());
+const webdav = new Webdav();
 webdav.Webdav = Webdav;
 export default webdav;
 

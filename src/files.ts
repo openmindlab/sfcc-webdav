@@ -137,7 +137,7 @@ export async function readStream(filePath: string): Promise<ReadStream> {
     stream.on('error', () => {
       reject(`Error reading file stream for '${filePath}'`);
     });
-    stream.on('readable', () => {
+    stream.on('ready', () => {
       resolve(stream);
     });
   });

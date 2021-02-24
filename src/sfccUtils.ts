@@ -3,14 +3,13 @@ import prettyBytes from 'pretty-bytes';
 import fs, { ReadStream } from 'fs';
 import { AxiosRequestConfig } from 'axios';
 import { OcapiClient } from './ocapiClient';
-import { OcapiRequestInterface } from './ocapiRequest';
-import { getDwJson, DWJson } from './dw';
+import { OcapiRequestInterface, OcapiProtocol } from './ocapiSettings';
 import { readStream } from './files';
 
 export class SFCCUtils extends OcapiClient {
   SFCCUtils: typeof SFCCUtils;
-  constructor(dwJson: DWJson) {
-    super(dwJson);
+  constructor() {
+    super();
   }
   async runJob(jobID: string, body?: any, callback?: Function) {
     const options: OcapiRequestInterface = {
@@ -25,9 +24,9 @@ export class SFCCUtils extends OcapiClient {
   }
   async upload(filePath: string, callback?: Function) {
     try {
-      const fileStream = await readStream(filePath);
+      const fileStream: ReadStream = await readStream(filePath);
       const options: AxiosRequestConfig = {
-        baseURL: `https://${this.hostname}`,
+        baseURL: `${OcapiProtocol}://${this.hostname}`,
         url: `/on/demandware.servlet/webdav/Sites/impex/src/instance`,
         headers: {
           Authorization: `Bearer ${this.token}`
@@ -59,7 +58,7 @@ export class SFCCUtils extends OcapiClient {
     return jobexecution;
   }
 }
-const client = new SFCCUtils(getDwJson());
+const client = new SFCCUtils();
 export default client;
 
 export async function runJob(jobID: string, body?: any, callback?: Function) {

@@ -10,6 +10,7 @@ export class Ocapi {
   hostname: string;
   codeVersion: string;
   axios: AxiosInstance;
+  tokenExpiration: number;
   Ocapi: typeof Ocapi;
   constructor() {
     const dwJSON: DWJson = getDwJson();
@@ -39,12 +40,19 @@ export class Ocapi {
     }
   }
   async setup() {
+    if (!this.clientId) {
+      throw new Error('Missing Client-id! Cannot make authorize request without it.');
+    }
+    if (!this.clientSecret) {
+      throw new Error('Missing Client-secret');
+    }
     if (!this.hostname) {
-      console.error(chalk.red('Missing hostname! Cannot make create a request without it.'));
-      throw 'Missing hostname';
+      throw new Error('Missing hostname');
     }
     if (!this.token) {
-      this.token = await this.authorize();
+      await this.authorize();
+    } else if (this.tokenExpiration >= new Date().getTime()) {
+      await this.authorize();
     }
   }
   useDwJson(dwJson: DWJson) {
@@ -75,12 +83,6 @@ export class Ocapi {
     }
   }
   async authorize(): Promise<string> {
-    if (!this.clientId) {
-      throw new Error('Missing Client-id! Cannot make authorize request without it.');
-    }
-    if (!this.clientSecret) {
-      throw new Error('Missing Client-secret');
-    }
     const authURL: string = 'https://account.demandware.com/dw/oauth2/access_token?grant_type=client_credentials';
     const { data } = await this.axios.request({
       url: authURL,
@@ -94,7 +96,13 @@ export class Ocapi {
       }
     });
     this.token = data.access_token;
-    console.log(`Successfully authorized with token: ${this.token}`);
+    this.tokenExpiration = new Date().getTime() + data.expires_in * 1000;
+    const expiringTime: Date = new Date(this.tokenExpiration);
+    console.log(
+      `Successfully authorized with token: ${
+        this.token
+      }.\nThe token will expire at ${expiringTime.getHours()}:${expiringTime.getMinutes()}`
+    );
     return this.token;
   }
 }

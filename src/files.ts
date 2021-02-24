@@ -59,10 +59,7 @@ export async function getJSONParsedContent(filePath: string): Promise<any> {
  * @param {String} filePath
  * @returns {Promise<Boolean>}
  */
-export async function writeJSONToFile(
-  filePath: string,
-  object: object
-): Promise<boolean> {
+export async function writeJSONToFile(filePath: string, object: object): Promise<boolean> {
   await fs.outputFile(filePath, JSON.stringify(object, null, 2));
   return true;
 }
@@ -72,10 +69,7 @@ export async function writeJSONToFile(
  * @param {String} filePath
  * @returns {Promise<Boolean>}
  */
-export async function writeToPlainFile(
-  filePath: string,
-  content: any
-): Promise<boolean> {
+export async function writeToPlainFile(filePath: string, content: any): Promise<boolean> {
   await fs.outputFile(filePath, String(content));
   return true;
 }
@@ -86,10 +80,7 @@ export async function writeToPlainFile(
  * @param {String} destination
  * @returns {Promise<Boolean>}
  */
-export async function copy(
-  source: string,
-  destination: string
-): Promise<boolean> {
+export async function copy(source: string, destination: string): Promise<boolean> {
   if (await checkForFile(source)) {
     await createFolderIfNotExists(destination);
     const sourceStat = await fs.lstat(source);
@@ -149,10 +140,7 @@ export async function readStream(filePath: string): Promise<ReadStream> {
  * @param {String} newname the destination file with new name
  * @returns {Promise<boolean>}
  */
-export async function rename(
-  source: string,
-  newname: string
-): Promise<boolean> {
+export async function rename(source: string, newname: string): Promise<boolean> {
   try {
     await fs.rename(source, newname);
     return true;

@@ -10,42 +10,28 @@ describe('File Utils', () => {
     expect(operation).toBe(testFolder);
   });
   test('Create file as plain text', async () => {
-    const operation = await fileUtils.writeToPlainFile(
-      `${testFolder}/${testFile}.txt`,
-      'content=true'
-    );
+    const operation = await fileUtils.writeToPlainFile(`${testFolder}/${testFile}.txt`, 'content=true');
     expect(operation).toBe(true);
   });
   test('Create file as JSON', async () => {
-    const operation = await fileUtils.writeJSONToFile(
-      `${testFolder}/${testFile}.json`,
-      { content: true }
-    );
+    const operation = await fileUtils.writeJSONToFile(`${testFolder}/${testFile}.json`, { content: true });
     expect(operation).toBe(true);
   });
   test('Check if file exists', async () => {
-    const operation = await fileUtils.checkForFile(
-      `${testFolder}/${testFile}.json`
-    );
+    const operation = await fileUtils.checkForFile(`${testFolder}/${testFile}.json`);
     expect(operation).toBe(true);
   });
   test('Get file content', async () => {
-    const operation = await fileUtils.getFileContent(
-      `${testFolder}/${testFile}.txt`
-    );
+    const operation = await fileUtils.getFileContent(`${testFolder}/${testFile}.txt`);
     expect(operation).toBe('content=true');
   });
   test('Get file content when file does not exists', async () => {
-    const consoleSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     await fileUtils.getFileContent(`${testFolder}/${testFile}_undefined.txt`);
     expect(consoleSpy).toHaveBeenCalled();
   });
   test('Get file content as JSON', async () => {
-    const operation = await fileUtils.getJSONParsedContent(
-      `${testFolder}/${testFile}.json`
-    );
+    const operation = await fileUtils.getJSONParsedContent(`${testFolder}/${testFile}.json`);
     expect(operation).toEqual({ content: true });
   });
   test('Copy files', async () => {
@@ -75,20 +61,12 @@ describe('File Utils', () => {
     expect(operation).toEqual(false);
   });
   test('Rename file if file exists', async () => {
-    const renamed = await fileUtils.rename(
-      `${testFolder}/${testFile}.txt`,
-      `${testFolder}/${testFile}_renamed.txt`
-    );
+    const renamed = await fileUtils.rename(`${testFolder}/${testFile}.txt`, `${testFolder}/${testFile}_renamed.txt`);
     expect(renamed).toEqual(true);
   });
   test('Rename file if file not exists', async () => {
-    const consoleSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
-    await fileUtils.rename(
-      `${testFolder}/${testFile}_fake.txt`,
-      `${testFolder}/${testFile}_renamed.txt`
-    );
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    await fileUtils.rename(`${testFolder}/${testFile}_fake.txt`, `${testFolder}/${testFile}_renamed.txt`);
     expect(consoleSpy).toHaveBeenCalled();
   });
   test('Read file stream', async () => {
@@ -98,9 +76,7 @@ describe('File Utils', () => {
   test('Read stream file error', async () => {
     return expect(async () => {
       await fileUtils.readStream(`${testFolder}/${testFile}-fake.json`);
-    }).rejects.toMatch(
-      `Error reading file stream for '${testFolder}/${testFile}-fake.json'`
-    );
+    }).rejects.toMatch(`Error reading file stream for '${testFolder}/${testFile}-fake.json'`);
   });
   test('Delete folder', async () => {
     const operation = await fileUtils.deleteFolder(testFolder);

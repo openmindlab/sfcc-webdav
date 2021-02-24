@@ -1,5 +1,5 @@
-import * as dw from "../src/dw";
-import { checkForFile, rename, writeJSONToFile } from "../src/files";
+import * as dw from '../src/dw';
+import { checkForFile, rename, writeJSONToFile } from '../src/files';
 const dwfile: string = `${process.cwd()}/dw.json`;
 const renamed: string = `${process.cwd()}/dw-renamed.json`;
 let dwjson: dw.DWJson;
@@ -14,10 +14,10 @@ async function createFake() {
   }
   if (!dwexists) {
     const dwcontent: dw.DWJson = {
-      hostname: "fake-host.demandware.net",
-      client_id: "d2d7d915-73f4-460d-a9f0-11ccecfb34fc",
-      client_secret: "_0p3nM1nd!",
-      "code-version": "test",
+      hostname: 'fake-host.demandware.net',
+      client_id: 'd2d7d915-73f4-460d-a9f0-11ccecfb34fc',
+      client_secret: '_0p3nM1nd!',
+      'code-version': 'test'
     };
     await writeJSONToFile(dwfile, dwcontent);
     dwjson = dw.getDwJson();
@@ -32,7 +32,7 @@ async function createFake() {
     }
   }
 }
-describe("dw properties", () => {
+describe('dw properties', () => {
   test(`if no 'dw.json' exists it will throws error`, async () => {
     const dwexists = await checkForFile(`${process.cwd()}/dw.json`);
     if (dwexists) {
@@ -56,6 +56,6 @@ describe("dw properties", () => {
   });
   test(`code version exists`, async () => {
     await createFake();
-    expect(dwjson["code-version"]).toBeDefined();
+    expect(dwjson['code-version']).toBeDefined();
   });
 });

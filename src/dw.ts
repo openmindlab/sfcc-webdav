@@ -22,9 +22,7 @@ export function getDwJson(): DWJson {
   if (!fs.existsSync(dwjsonpath)) {
     throw new Error(`Missing 'dw.json' file`);
   } else {
-    const dwjson: DWJson = JSON.parse(
-      fs.readFileSync(path.join(cwd, dwFile), 'UTF-8')
-    );
+    const dwjson: DWJson = JSON.parse(fs.readFileSync(path.join(cwd, dwFile), 'UTF-8'));
     return dwjson;
   }
 }
@@ -32,15 +30,8 @@ export function getDwJson(): DWJson {
 export async function setCodeVersion() {
   const dwConfig: DWJson = getDwJson();
   dwConfig['code-version'] = getCurrentBranchName();
-  const writeDwJson: boolean = await writeJSONToFile(
-    path.resolve(process.cwd(), dwFile),
-    dwConfig
-  );
+  const writeDwJson: boolean = await writeJSONToFile(path.resolve(process.cwd(), dwFile), dwConfig);
   const textEmoji: string = String.fromCodePoint(0x1f9ea);
-  console.log(
-    `${textEmoji} updated code version in ${chalk.bold.white.bgGreen(
-      dwConfig['code-version']
-    )}`
-  );
+  console.log(`${textEmoji} updated code version in ${chalk.bold.white.bgGreen(dwConfig['code-version'])}`);
   return writeDwJson;
 }

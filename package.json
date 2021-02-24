@@ -26,7 +26,8 @@
     "build": "tsc",
     "test": "jest",
     "postversion": "git push && git push --tags",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "prettier": "npx prettier --write ./src && npx prettier --write ./tests "
   },
   "files": [
     "dist/**/*",

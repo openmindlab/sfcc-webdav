@@ -2,11 +2,7 @@ import prettyBytes from 'pretty-bytes';
 import fs, { ReadStream } from 'fs';
 import { AxiosRequestConfig } from 'axios';
 import { OcapiClient } from './ocapiClient';
-import {
-  OcapiRequestInterface,
-  OcapiProtocol,
-  OcapiRequestMethod
-} from './ocapiSettings';
+import { OcapiRequestInterface, OcapiProtocol, OcapiRequestMethod } from './ocapiSettings';
 
 export class SFCCUtils extends OcapiClient {
   SFCCUtils: typeof SFCCUtils;
@@ -39,9 +35,7 @@ export class SFCCUtils extends OcapiClient {
         };
         this.sendRequest(options).then(() => {
           const uploadResponse = {
-            message: `Uploaded ${filePath} [${prettyBytes(
-              fs.statSync(filePath).size
-            )}]`,
+            message: `Uploaded ${filePath} [${prettyBytes(fs.statSync(filePath).size)}]`,
             fileSize: fs.statSync(filePath).size
           };
           if (callback) {

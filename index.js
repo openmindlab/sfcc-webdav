@@ -18,7 +18,7 @@ async function test() {
       path.resolve('./testUploadFile.txt'),
       webdavClient.toServerPath('testUploadFile.txt')
     );
-    const poppo = '';
+    console.log(response);
   } catch (err) {}
 }
 test();

@@ -45,8 +45,7 @@ const optionList: options = {
       alias: 'd',
       dependsOn: 'createPackage',
       type: OptionType.BOOLEAN,
-      description:
-        'Deploy the selected configuration or code version to the sandbox'
+      description: 'Deploy the selected configuration or code version to the sandbox'
     },
     {
       option: 'watch',

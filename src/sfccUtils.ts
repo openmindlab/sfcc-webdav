@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import prettyBytes from 'pretty-bytes';
 import fs, { ReadStream } from 'fs';
 import { AxiosRequestConfig } from 'axios';
@@ -8,7 +7,6 @@ import {
   OcapiProtocol,
   OcapiRequestMethod
 } from './ocapiSettings';
-import { readStream } from './files';
 
 export class SFCCUtils extends OcapiClient {
   SFCCUtils: typeof SFCCUtils;
@@ -39,19 +37,18 @@ export class SFCCUtils extends OcapiClient {
           method: OcapiRequestMethod.PUT,
           data: fileStream
         };
-        const response = this.sendRequest(options, () =>
-          console.log(
-            chalk.cyan(
-              `Uploaded '${filePath}' [${prettyBytes(
-                fs.statSync(filePath).size
-              )}]`
-            )
-          )
-        );
-        if (callback) {
-          callback(response);
-        }
-        return response;
+        this.sendRequest(options).then(() => {
+          const uploadResponse = {
+            message: `Uploaded ${filePath} [${prettyBytes(
+              fs.statSync(filePath).size
+            )}]`,
+            fileSize: fs.statSync(filePath).size
+          };
+          if (callback) {
+            callback(uploadResponse);
+          }
+          return uploadResponse;
+        });
       });
     } catch (error) {
       console.error(error);

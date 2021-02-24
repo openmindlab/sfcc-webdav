@@ -15,28 +15,10 @@ async function test() {
   const webdavClient = new Webdav();
   try {
     const response = await webdavClient.fileUpload(
-      path.resolve('./hunger.svg'),
-      webdavClient.toServerPath('hunger.svg')
+      path.resolve('./testUploadFile.txt'),
+      webdavClient.toServerPath('testUploadFile.txt')
     );
-    console.log(response);
-  } catch (err) {
-    const poppo = err;
-    const ccccc = '';
-  }
-  // const stream = await fileUtils.readStream(path.resolve('./file.txt'));
-  /* var hjuy = fs.createReadStream(path.resolve('./file.txt'));
-  hjuy.on('data', () => {
-    const dddd = hjuy;
-    const ccc = '';
-  });
-  hjuy.on('end', () => {
-    const dddd = hjuy;
-    const ccc = '';
-  });
-  hjuy.on('ready', () => {
-    const dddd = hjuy;
-    const ccc = '';
-  });*/
-  const pippo = '21_3';
+    const poppo = '';
+  } catch (err) {}
 }
 test();

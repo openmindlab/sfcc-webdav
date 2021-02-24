@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 import path from 'path';
 import fs, { ReadStream } from 'fs';
-import chalk from 'chalk';
 import prettyBytes from 'pretty-bytes';
 import { Ocapi } from './ocapi';
-import { readStream } from './files';
 import { AxiosRequestConfig } from 'axios';
 import { OcapiRequestMethod, OcapiProtocol } from './ocapiSettings';
 export class Webdav extends Ocapi {
@@ -30,7 +28,6 @@ export class Webdav extends Ocapi {
     return `${basepath}${cartridgepath}`;
   }
   async fileUpload(file: string, relativepath: string, callback?: Function) {
-    await this.checkup();
     const fileStream: ReadStream = fs.createReadStream(file);
     fileStream.on('ready', () => {
       const filesize: number = fs.statSync(file).size;
@@ -44,15 +41,16 @@ export class Webdav extends Ocapi {
         data: fileStream
       };
       try {
-        const response = this.sendRequest(options, () =>
-          console.log(
-            chalk.cyan(`Uploaded ${relativepath} [${prettyBytes(filesize)}]`)
-          )
-        );
-        if (callback) {
-          callback(response);
-        }
-        return response;
+        this.sendRequest(options).then(() => {
+          const uploadResponse = {
+            message: `Uploaded ${relativepath} [${prettyBytes(filesize)}]`,
+            fileSize: filesize
+          };
+          if (callback) {
+            callback(uploadResponse);
+          }
+          return uploadResponse;
+        });
       } catch (error) {
         console.error(error);
       }
@@ -67,13 +65,15 @@ export class Webdav extends Ocapi {
       },
       method: OcapiRequestMethod.DELETE
     };
-    const response = await this.sendRequest(options, () =>
-      console.log(chalk.cyan(`Deleted ${relativepath}`))
-    );
-    if (callback) {
-      callback(response);
-    }
-    return response;
+    await this.sendRequest(options).then(() => {
+      const deleteResponse = {
+        message: `Deleted ${relativepath}`
+      };
+      if (callback) {
+        callback(deleteResponse);
+      }
+      return deleteResponse;
+    });
   }
 }
 

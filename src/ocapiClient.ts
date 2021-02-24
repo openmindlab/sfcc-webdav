@@ -2,7 +2,11 @@ import chalk from 'chalk';
 import { AxiosRequestConfig } from 'axios';
 import Ocapi from './ocapi';
 import { getDwJson, DWJson } from './dw';
-import { OcapiRequestInterface, OcapiRequestType, OcapiRequestMethod } from './ocapiRequest';
+import {
+  OcapiRequestInterface,
+  OcapiRequestType,
+  OcapiRequestMethod
+} from './ocapiRequest';
 export class OcapiClient extends Ocapi {
   OcapiClient: typeof OcapiClient;
   constructor(dwJson: DWJson) {
@@ -12,16 +16,22 @@ export class OcapiClient extends Ocapi {
     super.checkup();
     if (!this.token) await this.authorize();
   }
-  private async requestBuilder(requestOption: OcapiRequestInterface): Promise<AxiosRequestConfig> {
+  private async requestBuilder(
+    requestOption: OcapiRequestInterface
+  ): Promise<AxiosRequestConfig> {
     const axiosOptions: AxiosRequestConfig = {
       baseURL: `https://${this.hostname}`,
-      url: `s/-/dw/${requestOption.type ? requestOption.type : OcapiRequestType.DATA}/v${
-        requestOption.version ? requestOption.version : '19_5'
-      }/${requestOption.endpoint}`,
+      url: `s/-/dw/${
+        requestOption.type ? requestOption.type : OcapiRequestType.DATA
+      }/v${requestOption.version ? requestOption.version : '19_5'}/${
+        requestOption.endpoint
+      }`,
       headers: {
-        Authorization: `Bearer ${this.token}`,
+        Authorization: `Bearer ${this.token}`
       },
-      method: requestOption.method ? requestOption.method : OcapiRequestMethod.GET,
+      method: requestOption.method
+        ? requestOption.method
+        : OcapiRequestMethod.GET
     };
     if (requestOption.body) {
       axiosOptions.data = requestOption.body;
@@ -53,9 +63,15 @@ export class OcapiClient extends Ocapi {
 const client = new OcapiClient(getDwJson());
 export default client;
 
-export async function dataRequest(requestOption: OcapiRequestInterface, callback?: Function) {
+export async function dataRequest(
+  requestOption: OcapiRequestInterface,
+  callback?: Function
+) {
   return await client.dataRequest(requestOption, callback);
 }
-export async function shopRequest(requestOption: OcapiRequestInterface, callback?: Function) {
+export async function shopRequest(
+  requestOption: OcapiRequestInterface,
+  callback?: Function
+) {
   return await client.shopRequest(requestOption, callback);
 }

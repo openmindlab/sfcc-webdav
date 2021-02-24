@@ -15,7 +15,7 @@ export class SFCCUtils extends OcapiClient {
   async runJob(jobID: string, body?: any, callback?: Function) {
     const options: OcapiRequestInterface = {
       endpoint: `jobs/${jobID}/executions`,
-      body: body,
+      body: body
     };
     const response = await this.dataRequest(options);
     if (callback) {
@@ -30,13 +30,17 @@ export class SFCCUtils extends OcapiClient {
         baseURL: `https://${this.hostname}`,
         url: `/on/demandware.servlet/webdav/Sites/impex/src/instance`,
         headers: {
-          Authorization: `Bearer ${this.token}`,
+          Authorization: `Bearer ${this.token}`
         },
         method: 'PUT',
-        data: fileStream,
+        data: fileStream
       };
       const response = await this.sendRequest(options);
-      console.log(chalk.cyan(`Uploaded '${filePath}' [${prettyBytes(fs.statSync(filePath).size)}]`));
+      console.log(
+        chalk.cyan(
+          `Uploaded '${filePath}' [${prettyBytes(fs.statSync(filePath).size)}]`
+        )
+      );
       if (callback) {
         callback(response);
       }
@@ -46,7 +50,9 @@ export class SFCCUtils extends OcapiClient {
     }
   }
   async importJob(fileName: string, callback?: Function) {
-    const jobexecution = await this.runJob('sfcc-site-archive-import', { file_name: fileName });
+    const jobexecution = await this.runJob('sfcc-site-archive-import', {
+      file_name: fileName
+    });
     if (callback) {
       callback(jobexecution);
     }

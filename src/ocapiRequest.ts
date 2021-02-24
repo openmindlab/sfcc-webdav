@@ -3,11 +3,11 @@ export enum OcapiRequestMethod {
   POST = 'POST',
   PATCH = 'PATCH',
   PUT = 'PUT',
-  DELETE = 'DELETE',
+  DELETE = 'DELETE'
 }
 export enum OcapiRequestType {
   DATA = 'data',
-  SHOP = 'shop',
+  SHOP = 'shop'
 }
 export interface OcapiRequestInterface {
   version?: string;

@@ -1,5 +1,5 @@
-import fs, { ReadStream } from "fs-extra";
-import path from "path";
+import fs, { ReadStream } from 'fs-extra';
+import path from 'path';
 
 /**
  * Create folder if not exists
@@ -37,10 +37,10 @@ export async function checkForFile(fileName: string): Promise<boolean> {
 export async function getFileContent(fileName: string): Promise<string> {
   const missingError: string = `The file '${fileName}' is missing in given path`;
   if (await checkForFile(fileName)) {
-    return await fs.readFile(fileName, { encoding: "utf8" });
+    return await fs.readFile(fileName, { encoding: 'utf8' });
   } else {
     console.error(missingError);
-    return "";
+    return '';
   }
 }
 
@@ -93,11 +93,11 @@ export async function copy(
   if (await checkForFile(source)) {
     await createFolderIfNotExists(destination);
     const sourceStat = await fs.lstat(source);
-    const sourceType = sourceStat.isFile() ? "file" : "directory";
-    if (sourceType === "file") {
+    const sourceType = sourceStat.isFile() ? 'file' : 'directory';
+    if (sourceType === 'file') {
       await fs.copy(source, `${destination}/${path.basename(source)}`);
       return true;
-    } else if (sourceType === "directory") {
+    } else if (sourceType === 'directory') {
       await fs.copy(source, `${destination}/`);
       return true;
     }
@@ -134,13 +134,13 @@ export function listFiles(dir: string): Array<string> {
 export function readStream(filePath: string): Promise<ReadStream> {
   return new Promise((resolve, reject) => {
     const fileStream: ReadStream = fs.createReadStream(filePath);
-    fileStream.on("error", (err: any) => {
+    fileStream.on('error', (err: any) => {
       console.error(
         `On Upload request of file ${filePath}, ReadStream Error: ${err}`
       );
       reject(err);
     });
-    fileStream.on("ready", async () => {
+    fileStream.on('ready', async () => {
       resolve(fileStream);
     });
   });

@@ -15,7 +15,8 @@ export class Webdav extends Ocapi {
   toServerPath(file: string) {
     let basepath = `/cartridges/${this.codeVersion}/`;
     let cartridgepath =
-      path.basename(file.substr(0, file.indexOf('/cartridge/'))) + file.substr(file.indexOf('/cartridge/'));
+      path.basename(file.substr(0, file.indexOf('/cartridge/'))) +
+      file.substr(file.indexOf('/cartridge/'));
     return `${basepath}${cartridgepath}`;
   }
   async fileUpload(file: string, relativepath: string, callback?: Function) {
@@ -25,13 +26,15 @@ export class Webdav extends Ocapi {
       baseURL: `https://${this.hostname}`,
       url: `/on/demandware.servlet/webdav/Sites${relativepath}`,
       headers: {
-        Authorization: `Bearer ${this.token}`,
+        Authorization: `Bearer ${this.token}`
       },
       method: 'PUT',
-      data: fileStream,
+      data: fileStream
     };
     const response = await this.sendRequest(options, () =>
-      console.log(chalk.cyan(`Uploaded ${relativepath} [${prettyBytes(filesize)}]`))
+      console.log(
+        chalk.cyan(`Uploaded ${relativepath} [${prettyBytes(filesize)}]`)
+      )
     );
     if (callback) {
       callback(response);
@@ -43,11 +46,13 @@ export class Webdav extends Ocapi {
       baseURL: `https://${this.hostname}`,
       url: `/on/demandware.servlet/webdav/Sites${relativepath}`,
       headers: {
-        Authorization: `Bearer ${this.token}`,
+        Authorization: `Bearer ${this.token}`
       },
-      method: 'DELETE',
+      method: 'DELETE'
     };
-    const response = await this.sendRequest(options, () => console.log(chalk.cyan(`Deleted ${relativepath}`)));
+    const response = await this.sendRequest(options, () =>
+      console.log(chalk.cyan(`Deleted ${relativepath}`))
+    );
     if (callback) {
       callback(response);
     }
@@ -64,7 +69,11 @@ export default webdav;
  * @param {string} file Local file path
  * @param {string} remote path, starting with '/cartridges'
  */
-export async function fileUpload(file: string, relativepath: string, callback?: Function) {
+export async function fileUpload(
+  file: string,
+  relativepath: string,
+  callback?: Function
+) {
   await webdav.fileUpload(file, relativepath, callback);
 }
 
@@ -73,6 +82,10 @@ export async function fileUpload(file: string, relativepath: string, callback?: 
  * @param {string} file Local file path
  * @param {string} remote path, starting with '/cartridges'
  */
-export async function fileDelete(file: string, relativepath: string, callback?: Function) {
+export async function fileDelete(
+  file: string,
+  relativepath: string,
+  callback?: Function
+) {
   await webdav.fileDelete(file, relativepath, callback);
 }

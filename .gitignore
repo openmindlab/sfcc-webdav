@@ -4,3 +4,4 @@ package-lock.json
 dw.json
 dist/*
 test_folder_tmp
+coverage

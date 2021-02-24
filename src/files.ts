@@ -146,6 +146,12 @@ export function readStream(filePath: string): Promise<ReadStream> {
   });
 }
 
+/**
+ * Rename file
+ * @param {String} source the source file
+ * @param {String} newname the destination file with new name
+ * @returns {Promise<boolean>}
+ */
 export async function rename(
   source: string,
   newname: string

@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const fileUtils = require('./dist/files');
 // const Ocapi = require('./dist/ocapi').Ocapi;
 // const OcapiClient = require('./dist/ocapiClient').OcapiClient;
 const Webdav = require('./dist/webdav').Webdav;
@@ -12,21 +13,30 @@ async function test() {
   //   version: '21_3'
   // });
   const webdavClient = new Webdav();
-  const response = await webdavClient.fileUpload(
-    path.resolve('./file.txt'),
-    webdavClient.toServerPath('file.txt')
-  );
-  console.log(response);
+  try {
+    const response = await webdavClient.fileUpload(
+      path.resolve('./hunger.svg'),
+      webdavClient.toServerPath('hunger.svg')
+    );
+    console.log(response);
+  } catch (err) {
+    const poppo = err;
+    const ccccc = '';
+  }
+  // const stream = await fileUtils.readStream(path.resolve('./file.txt'));
+  /* var hjuy = fs.createReadStream(path.resolve('./file.txt'));
+  hjuy.on('data', () => {
+    const dddd = hjuy;
+    const ccc = '';
+  });
+  hjuy.on('end', () => {
+    const dddd = hjuy;
+    const ccc = '';
+  });
+  hjuy.on('ready', () => {
+    const dddd = hjuy;
+    const ccc = '';
+  });*/
   const pippo = '21_3';
-  /* const stream = fs.createReadStream(path.resolve('./file.txt'));
-  stream.on('ready', () => {
-    console.log('ready');
-  });
-  stream.on('readable', () => {
-    console.log('readable');
-  });
-  stream.on('error', () => {
-    console.log('error');
-  }); */
 }
 test();

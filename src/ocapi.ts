@@ -15,8 +15,8 @@ export class Ocapi {
   constructor() {
     const dwJSON: DWJson = getDwJson();
     this.useDwJson(dwJSON);
-    this.token = undefined;
     this.axios = Axios.create();
+    this.checkup();
     this.axios.interceptors.request.use((request) => {
       if (this.trace) {
         console.log(`
@@ -62,7 +62,6 @@ export class Ocapi {
     this.codeVersion = dwJson?.['code-version'];
   }
   async sendRequest(options: AxiosRequestConfig, callback?: Function) {
-    await this.checkup();
     try {
       let { data } = await this.axios.request(options);
       if (callback) {

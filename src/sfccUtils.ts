@@ -24,26 +24,31 @@ export class SFCCUtils extends OcapiClient {
   }
   async upload(filePath: string, callback?: Function) {
     try {
-      const fileStream: ReadStream = await readStream(filePath);
-      const options: AxiosRequestConfig = {
-        baseURL: `${OcapiProtocol}://${this.hostname}`,
-        url: `/on/demandware.servlet/webdav/Sites/impex/src/instance`,
-        headers: {
-          Authorization: `Bearer ${this.token}`
-        },
-        method: 'PUT',
-        data: fileStream
-      };
-      const response = await this.sendRequest(options);
-      console.log(
-        chalk.cyan(
-          `Uploaded '${filePath}' [${prettyBytes(fs.statSync(filePath).size)}]`
-        )
-      );
-      if (callback) {
-        callback(response);
-      }
-      return response;
+      const fileStream: ReadStream = fs.createReadStream(filePath);
+      fileStream.on('ready', () => {
+        const options: AxiosRequestConfig = {
+          baseURL: `${OcapiProtocol}://${this.hostname}`,
+          url: `/on/demandware.servlet/webdav/Sites/impex/src/instance`,
+          headers: {
+            Authorization: `Bearer ${this.token}`
+          },
+          method: 'PUT',
+          data: fileStream
+        };
+        const response = this.sendRequest(options, () =>
+          console.log(
+            chalk.cyan(
+              `Uploaded '${filePath}' [${prettyBytes(
+                fs.statSync(filePath).size
+              )}]`
+            )
+          )
+        );
+        if (callback) {
+          callback(response);
+        }
+        return response;
+      });
     } catch (error) {
       console.error(error);
     }

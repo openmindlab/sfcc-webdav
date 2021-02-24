@@ -11,10 +11,6 @@ export class OcapiClient extends Ocapi {
   constructor() {
     super();
   }
-  async checkup() {
-    super.checkup();
-    if (!this.token) await this.authorize();
-  }
   private async requestBuilder(
     requestOption: OcapiRequestInterface
   ): Promise<AxiosRequestConfig> {

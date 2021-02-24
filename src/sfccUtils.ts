@@ -3,7 +3,11 @@ import prettyBytes from 'pretty-bytes';
 import fs, { ReadStream } from 'fs';
 import { AxiosRequestConfig } from 'axios';
 import { OcapiClient } from './ocapiClient';
-import { OcapiRequestInterface, OcapiProtocol } from './ocapiSettings';
+import {
+  OcapiRequestInterface,
+  OcapiProtocol,
+  OcapiRequestMethod
+} from './ocapiSettings';
 import { readStream } from './files';
 
 export class SFCCUtils extends OcapiClient {
@@ -32,7 +36,7 @@ export class SFCCUtils extends OcapiClient {
           headers: {
             Authorization: `Bearer ${this.token}`
           },
-          method: 'PUT',
+          method: OcapiRequestMethod.PUT,
           data: fileStream
         };
         const response = this.sendRequest(options, () =>

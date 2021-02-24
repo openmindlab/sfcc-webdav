@@ -77,7 +77,7 @@ export class Ocapi {
         options.headers.Authorization = `Bearer ${this.token}`;
       }
       try {
-        let { data } = await Axios.request(options);
+        let { data } = await this.axios.request(options);
         if (callback) {
           callback(data);
         }
@@ -111,6 +111,7 @@ export class Ocapi {
       }
     });
     this.token = data.access_token;
+    console.log(`Successfully authorized with token: ${this.token}`);
     return this.token;
   }
 }

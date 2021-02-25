@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import Axios, { AxiosRequestConfig, AxiosInstance } from 'axios';
-import { DWInstance, dwinstance } from './dwInstance';
+import { DWInstance, dwinstance } from './dw';
 import { tokenstring } from './token';
 export default class Ocapi {
   trace: boolean = process.env.NODE_ENV !== 'production';

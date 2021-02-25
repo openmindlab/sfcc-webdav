@@ -1,6 +1,6 @@
 import Axios, { AxiosRequestConfig, AxiosInstance } from 'axios';
 import { EventEmitter } from 'events';
-import { DWInstance, dwinstance } from './dwInstance';
+import { DWInstance, dwinstance } from './dw';
 import { OcapiRequestMethod, OcapiRequestContentType } from './ocapiSettings';
 export declare interface Token {
   on(event: 'authorized', listener: (token: string, expiration: number) => void): this;

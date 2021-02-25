@@ -47,7 +47,6 @@ export class DWInstance {
       return this.setup(dwJson);
     } else {
       for (const err of validate.errors) {
-        //chalk.red(`'dw.json' file ${err.message}`)
         console.error(chalk`{bgRed.black 'dw.json' file ${err.message}}`);
       }
     }

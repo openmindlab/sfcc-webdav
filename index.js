@@ -7,6 +7,7 @@ const Webdav = require('./dist/webdav').Webdav;
 const Token = require('./dist/token').Token;
 const tokenstring = require('./dist/token').tokenstring;
 const dwinstance = require('./dist/dwInstance').dwinstance;
+const packagejson = require('./dist/package').packageinstance;
 async function test() {
   /* const ocapiClient = new OcapiClient();
   const response = await ocapiClient.dataRequest({
@@ -30,9 +31,11 @@ async function test() {
   token.on('expired', (token, expiration) => {
     console.log('expired', token, new Date(expiration));
   });*/
+  /* const package = await packagejson();
+  console.log(package); */
   /* const dwInstance = await dwinstance();
-  console.log(dwInstance);
-  dwInstance.setCodeVersion('pippo'); */
+  console.log(dwInstance); */
+  //dwInstance.setCodeVersion('pippo');
   /* const token = await tokenstring();
   console.log(token); */
 }

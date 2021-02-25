@@ -2,12 +2,11 @@ import chalk from 'chalk';
 import Axios, { AxiosRequestConfig, AxiosInstance } from 'axios';
 import { DWInstance, dwinstance } from './dwInstance';
 import { tokenstring } from './token';
-export class Ocapi {
+export default class Ocapi {
   trace: boolean = process.env.NODE_ENV !== 'production';
   axios: AxiosInstance;
   dwjson: DWInstance;
   token: string;
-  Ocapi: typeof Ocapi;
   constructor() {
     this.axios = Axios.create();
     if (this.trace) {
@@ -34,14 +33,12 @@ export class Ocapi {
     }
   }
   async setup() {
-    console.log('start setup');
     if (!this.dwjson) {
       this.dwjson = await dwinstance();
     }
     if (!this.token) {
       this.token = await tokenstring();
     }
-    console.log('end setup');
   }
   async requestOptions(options: AxiosRequestConfig): Promise<AxiosRequestConfig> {
     await this.setup();
@@ -66,4 +63,3 @@ export class Ocapi {
     }
   }
 }
-export default Ocapi;

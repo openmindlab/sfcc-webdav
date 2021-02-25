@@ -1,4 +1,4 @@
-import { getJSONParsedContent } from './files';
+import { getJSONParsedContent, writeJSONToFile } from './files';
 import Ajv from 'ajv';
 import chalk from 'chalk';
 
@@ -15,12 +15,13 @@ export class DWInstance {
   clientSecret: string;
   hostName: string;
   codeVersion: string;
-  constructor() {}
+  path: string;
   setup(dwJson: DWJson): DWInstance {
     this.clientID = dwJson['client-id'];
     this.clientSecret = dwJson['client-secret'];
     this.hostName = dwJson.hostname;
     this.codeVersion = dwJson['code-version'];
+    this.path = `${process.cwd()}/${this.dwfile}`;
     return this;
   }
   async loadFile(): Promise<DWJson> {
@@ -50,6 +51,12 @@ export class DWInstance {
         console.error(chalk`{bgRed.black 'dw.json' file ${err.message}}`);
       }
     }
+  }
+  async setCodeVersion(codeVersion: string) {
+    this.codeVersion = codeVersion;
+    const dwjson = await this.loadFile();
+    dwjson['code-version'] = codeVersion;
+    await writeJSONToFile(this.path, dwjson);
   }
 }
 

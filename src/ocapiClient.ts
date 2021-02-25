@@ -3,10 +3,6 @@ import { DataResponse } from './response';
 import Ocapi from './ocapi';
 import { OcapiRequestInterface, OcapiRequestType, OcapiRequestMethod, OcapiDefaultVersion } from './ocapiSettings';
 export class OcapiClient extends Ocapi {
-  OcapiClient: typeof OcapiClient;
-  constructor() {
-    super();
-  }
   private async requestBuilder(requestOption: OcapiRequestInterface): Promise<AxiosRequestConfig> {
     await this.setup();
     const axiosOptions: AxiosRequestConfig = {

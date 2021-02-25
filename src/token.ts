@@ -1,6 +1,5 @@
 import Axios, { AxiosRequestConfig, AxiosInstance } from 'axios';
 import { EventEmitter } from 'events';
-import { DWJson, getDwJson } from './dw';
 import { DWInstance, dwinstance } from './dwInstance';
 import { OcapiRequestMethod, OcapiRequestContentType } from './ocapiSettings';
 export declare interface Token {
@@ -21,7 +20,9 @@ export class Token extends EventEmitter {
     this.axios = Axios.create();
   }
   async authorize(): Promise<string> {
-    this.dwjson = await dwinstance();
+    if (!this.dwjson) {
+      this.dwjson = await dwinstance();
+    }
     const { data } = await this.axios.request({
       url: this.authURL,
       method: OcapiRequestMethod.POST,
@@ -40,11 +41,9 @@ export class Token extends EventEmitter {
     this.timeout = setTimeout(() => {
       this.emit('expired', this.token, this.expiration);
       if (this.autorefresh) {
-        console.log('refresh token');
         this.authorize();
       }
-      // }, data.expires_in * 1000);
-    }, 5 * 1000);
+    }, data.expires_in * 1000);
     return this.token;
   }
 }

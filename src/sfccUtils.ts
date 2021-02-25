@@ -5,10 +5,6 @@ import { OcapiClient } from './ocapiClient';
 import { OcapiRequestInterface, OcapiProtocol, OcapiRequestMethod } from './ocapiSettings';
 
 export class SFCCUtils extends OcapiClient {
-  SFCCUtils: typeof SFCCUtils;
-  constructor() {
-    super();
-  }
   async runJob(jobID: string, body?: any, callback?: Function) {
     const options: OcapiRequestInterface = {
       endpoint: `jobs/${jobID}/executions`,

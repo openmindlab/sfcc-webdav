@@ -1,16 +1,12 @@
 import path from 'path';
 import fs, { ReadStream } from 'fs';
 import prettyBytes from 'pretty-bytes';
-import { Ocapi } from './ocapi';
+import Ocapi from './ocapi';
 import { AxiosRequestConfig } from 'axios';
 import { OcapiRequestMethod, OcapiProtocol } from './ocapiSettings';
 import { UploadResponse } from './response';
 export class Webdav extends Ocapi {
-  Webdav: typeof Webdav;
   webdavPath: string = '/on/demandware.servlet/webdav/Sites';
-  constructor() {
-    super();
-  }
   /**
    * Use this method to upload files within current version cartridge path
    * @param {String} file
@@ -27,6 +23,7 @@ export class Webdav extends Ocapi {
     return `${basepath}${cartridgepath}`;
   }
   async fileUpload(file: string, relativepath: string, callback?: Function): Promise<UploadResponse> {
+    await this.setup();
     return new Promise((resolve, reject) => {
       const fileStream: ReadStream = fs.createReadStream(file);
       fileStream.on('ready', () => {
@@ -55,6 +52,7 @@ export class Webdav extends Ocapi {
     });
   }
   async fileDelete(file: string, relativepath: string, callback?: Function) {
+    await this.setup();
     const options: AxiosRequestConfig = {
       baseURL: `${OcapiProtocol}://${this.dwjson.hostName}`,
       url: `${this.webdavPath}${relativepath}`,
@@ -76,9 +74,7 @@ export class Webdav extends Ocapi {
 }
 
 const webdav = new Webdav();
-webdav.Webdav = Webdav;
 export default webdav;
-
 /**
  * Upload a file via webdav
  * @param {string} file Local file path
@@ -87,7 +83,6 @@ export default webdav;
 export async function fileUpload(file: string, relativepath: string, callback?: Function) {
   await webdav.fileUpload(file, relativepath, callback);
 }
-
 /**
  * Deletes a file via webdav
  * @param {string} file Local file path

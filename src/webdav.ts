@@ -16,7 +16,7 @@ export class Webdav extends Ocapi {
    * @param {String} file
    */
   toServerPath(file: string) {
-    let basepath: string = `/cartridges/${this.codeVersion}/`;
+    let basepath: string = `/cartridges/${this.dwjson.codeVersion}/`;
     let cartridgepath: string = '';
     if (file.indexOf('/cartridge/') >= 0) {
       cartridgepath =
@@ -32,7 +32,7 @@ export class Webdav extends Ocapi {
       fileStream.on('ready', () => {
         const filesize: number = fs.statSync(file).size;
         const options: AxiosRequestConfig = {
-          baseURL: `${OcapiProtocol}://${this.hostname}`,
+          baseURL: `${OcapiProtocol}://${this.dwjson.hostName}`,
           url: `${this.webdavPath}${relativepath}`,
           method: OcapiRequestMethod.PUT,
           data: fileStream
@@ -56,7 +56,7 @@ export class Webdav extends Ocapi {
   }
   async fileDelete(file: string, relativepath: string, callback?: Function) {
     const options: AxiosRequestConfig = {
-      baseURL: `${OcapiProtocol}://${this.hostname}`,
+      baseURL: `${OcapiProtocol}://${this.dwjson.hostName}`,
       url: `${this.webdavPath}${relativepath}`,
       headers: {
         Authorization: `Bearer ${this.token}`

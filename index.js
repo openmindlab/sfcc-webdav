@@ -1,18 +1,19 @@
 const path = require('path');
 const fs = require('fs');
-// const fileUtils = require('./dist/files');
-// const Ocapi = require('./dist/ocapi').Ocapi;
-// const OcapiClient = require('./dist/ocapiClient').OcapiClient;
-// const Webdav = require('./dist/webdav').Webdav;
+const fileUtils = require('./dist/files');
+const Ocapi = require('./dist/ocapi').Ocapi;
+const OcapiClient = require('./dist/ocapiClient').OcapiClient;
+const Webdav = require('./dist/webdav').Webdav;
 const Token = require('./dist/token').Token;
+const tokenstring = require('./dist/token').tokenstring;
+// const dwinstance = require('./dist/dwInstance').dwinstance;
 async function test() {
-  /* const ocapi = new Ocapi();
-  const token = await ocapi.authorize();
-  const ocapiClient = new OcapiClient();
+  /* const ocapiClient = new OcapiClient();
   const response = await ocapiClient.dataRequest({
     endpoint: 'code_versions',
     version: '21_3'
-  }); */
+  });
+  console.log(response); */
   /* const webdavClient = new Webdav();
   try {
     const response = await webdavClient.fileUpload(
@@ -21,13 +22,17 @@ async function test() {
     );
     console.log(response);
   } catch (err) {} */
-  const token = new Token();
+  /*const token = new Token();
   token.authorize();
   token.on('authorized', (token, expiration) => {
     console.log('authorized', token, new Date(expiration));
   });
   token.on('expired', (token, expiration) => {
     console.log('expired', token, new Date(expiration));
-  });
+  });*/
+  /* const dwInstance = await dwinstance();
+  console.log(dwInstance); */
+  /* const token = await tokenstring();
+  console.log(token); */
 }
 test();

@@ -1,20 +1,14 @@
 import chalk from 'chalk';
 import Axios, { AxiosRequestConfig, AxiosInstance } from 'axios';
-import { DWJson, getDwJson } from './dw';
-import { OcapiRequestMethod, OcapiRequestContentType } from './ocapiSettings';
+import { DWInstance, dwinstance } from './dwInstance';
+import { tokenstring } from './token';
 export class Ocapi {
-  clientId: string;
-  clientSecret: string;
-  token: string;
   trace: boolean = process.env.NODE_ENV !== 'production';
-  hostname: string;
-  codeVersion: string;
   axios: AxiosInstance;
-  tokenExpiration: number;
+  dwjson: DWInstance;
+  token: string;
   Ocapi: typeof Ocapi;
   constructor() {
-    const dwJSON: DWJson = getDwJson();
-    this.useDwJson(dwJSON);
     this.axios = Axios.create();
     if (this.trace) {
       this.axios.interceptors.request.use((request) => {
@@ -40,26 +34,14 @@ export class Ocapi {
     }
   }
   async setup() {
-    if (!this.clientId) {
-      throw new Error('Missing Client-id! Cannot make authorize request without it.');
-    }
-    if (!this.clientSecret) {
-      throw new Error('Missing Client-secret');
-    }
-    if (!this.hostname) {
-      throw new Error('Missing hostname');
+    console.log('start setup');
+    if (!this.dwjson) {
+      this.dwjson = await dwinstance();
     }
     if (!this.token) {
-      await this.authorize();
-    } else if (this.tokenExpiration >= new Date().getTime()) {
-      await this.authorize();
+      this.token = await tokenstring();
     }
-  }
-  useDwJson(dwJson: DWJson) {
-    this.clientId = dwJson.client_id;
-    this.clientSecret = dwJson.client_secret;
-    this.hostname = dwJson?.hostname;
-    this.codeVersion = dwJson?.['code-version'];
+    console.log('end setup');
   }
   async requestOptions(options: AxiosRequestConfig): Promise<AxiosRequestConfig> {
     await this.setup();
@@ -72,6 +54,7 @@ export class Ocapi {
   }
   async sendRequest(options: AxiosRequestConfig, callback?: Function) {
     const requestOptions: AxiosRequestConfig = await this.requestOptions(options);
+    console.log(requestOptions);
     try {
       const { data } = await this.axios.request(requestOptions);
       if (callback) {
@@ -81,29 +64,6 @@ export class Ocapi {
     } catch (err) {
       console.error(err);
     }
-  }
-  async authorize(): Promise<string> {
-    const authURL: string = 'https://account.demandware.com/dw/oauth2/access_token?grant_type=client_credentials';
-    const { data } = await this.axios.request({
-      url: authURL,
-      method: OcapiRequestMethod.POST,
-      headers: {
-        'content-type': OcapiRequestContentType.APPLICATION_URL_ENCODED
-      },
-      auth: {
-        username: this.clientId,
-        password: this.clientSecret
-      }
-    });
-    this.token = data.access_token;
-    this.tokenExpiration = new Date().getTime() + data.expires_in * 1000;
-    const expiringTime: Date = new Date(this.tokenExpiration);
-    console.log(
-      `Successfully authorized with token: ${
-        this.token
-      }.\nThe token will expire at ${expiringTime.getHours()}:${expiringTime.getMinutes()}`
-    );
-    return this.token;
   }
 }
 export default Ocapi;

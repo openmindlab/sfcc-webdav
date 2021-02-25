@@ -25,7 +25,7 @@ export class SFCCUtils extends OcapiClient {
       const fileStream: ReadStream = fs.createReadStream(filePath);
       fileStream.on('ready', () => {
         const options: AxiosRequestConfig = {
-          baseURL: `${OcapiProtocol}://${this.hostname}`,
+          baseURL: `${OcapiProtocol}://${this.dwjson.hostName}`,
           url: `/on/demandware.servlet/webdav/Sites/impex/src/instance`,
           headers: {
             Authorization: `Bearer ${this.token}`

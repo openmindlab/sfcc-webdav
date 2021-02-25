@@ -8,8 +8,9 @@ export class OcapiClient extends Ocapi {
     super();
   }
   private async requestBuilder(requestOption: OcapiRequestInterface): Promise<AxiosRequestConfig> {
+    await this.setup();
     const axiosOptions: AxiosRequestConfig = {
-      baseURL: `https://${this.hostname}`,
+      baseURL: `https://${this.dwjson.hostName}`,
       url: `s/-/dw/${requestOption.type ? requestOption.type : OcapiRequestType.DATA}/v${
         requestOption.version ? requestOption.version : OcapiDefaultVersion
       }/${requestOption.endpoint}`,

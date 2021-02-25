@@ -1,6 +1,5 @@
 import * as fileUtils from '../src/files';
 import path from 'path';
-import { ReadStream } from 'fs-extra';
 const testFolder = `${process.cwd()}/test_folder_tmp`;
 const testFile = 'demofile';
 fileUtils.deleteFolder(testFolder);

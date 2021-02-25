@@ -84,11 +84,10 @@ export async function copy(source: string, destination: string): Promise<boolean
   if (await checkForFile(source)) {
     await createFolderIfNotExists(destination);
     const sourceStat = await fs.lstat(source);
-    const sourceType = sourceStat.isFile() ? 'file' : 'directory';
-    if (sourceType === 'file') {
+    if (sourceStat.isFile()) {
       await fs.copy(source, `${destination}/${path.basename(source)}`);
       return true;
-    } else if (sourceType === 'directory') {
+    } else if (sourceStat.isDirectory()) {
       await fs.copy(source, `${destination}/`);
       return true;
     }

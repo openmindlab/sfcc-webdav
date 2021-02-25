@@ -4,5 +4,8 @@
       "fileMatch": ["dw.json"],
       "url": "./schema/dw.schema.json"
     }
-  ]
+  ],
+  "ponicode.testSettings.testLocation.locationType": "Custom",
+  "ponicode.testSettings.testLocation.path": "{rootDir}/tests/{fileName}.test.{ext}",
+  "ponicode.token": "f1ae9198-f2af-451c-b9df-97c149fa75b3"
 }

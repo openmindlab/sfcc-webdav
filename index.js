@@ -6,8 +6,9 @@ const OcapiClient = require('./dist/ocapiClient').OcapiClient;
 const Webdav = require('./dist/webdav').Webdav;
 const Token = require('./dist/token').Token;
 const tokenstring = require('./dist/token').tokenstring;
-const dwinstance = require('./dist/dwInstance').dwinstance;
+const dwinstance = require('./dist/dw').dwinstance;
 const packagejson = require('./dist/package').packageinstance;
+const projectC = require('./dist/cartridges');
 async function test() {
   /* const ocapiClient = new OcapiClient();
   const response = await ocapiClient.dataRequest({
@@ -38,5 +39,6 @@ async function test() {
   //dwInstance.setCodeVersion('pippo');
   /* const token = await tokenstring();
   console.log(token); */
+  const c = projectC.projectCartridges();
 }
 test();

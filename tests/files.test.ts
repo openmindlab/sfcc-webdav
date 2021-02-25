@@ -69,15 +69,6 @@ describe('File Utils', () => {
     await fileUtils.rename(`${testFolder}/${testFile}_fake.txt`, `${testFolder}/${testFile}_renamed.txt`);
     expect(consoleSpy).toHaveBeenCalled();
   });
-  test('Read file stream', async () => {
-    const stream = await fileUtils.readStream(`${testFolder}/${testFile}.json`);
-    expect(stream.readable).toBe(true);
-  });
-  test('Read stream file error', async () => {
-    return expect(async () => {
-      await fileUtils.readStream(`${testFolder}/${testFile}-fake.json`);
-    }).rejects.toMatch(`Error reading file stream for '${testFolder}/${testFile}-fake.json'`);
-  });
   test('Delete folder', async () => {
     const operation = await fileUtils.deleteFolder(testFolder);
     expect(operation).toBe(true);

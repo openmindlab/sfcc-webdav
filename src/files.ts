@@ -1,4 +1,4 @@
-import fs, { ReadStream } from 'fs-extra';
+import fs, { ReadStream, readdirSync, Dirent } from 'fs-extra';
 import path from 'path';
 
 /**
@@ -22,22 +22,22 @@ export async function deleteFolder(folder: string): Promise<boolean> {
 
 /**
  * Check if configuration file `dw.json` exists in project root
- * @param {String} fileName
+ * @param {String} file
  * @returns {Promise<Boolean>}
  */
-export async function checkForFile(fileName: string): Promise<boolean> {
-  return await fs.pathExists(fileName);
+export async function checkForFile(file: string): Promise<boolean> {
+  return await fs.pathExists(file);
 }
 
 /**
  * Return object represent `dw.json` project config
- * @param {string} fileName
+ * @param {string} file
  * @returns {Promise<String>}
  */
-export async function getFileContent(fileName: string): Promise<string> {
-  const missingError: string = `The file '${fileName}' is missing in given path`;
-  if (await checkForFile(fileName)) {
-    return await fs.readFile(fileName, { encoding: 'utf8' });
+export async function getFileContent(file: string): Promise<string> {
+  const missingError: string = `The file '${file}' is missing in given path`;
+  if (await checkForFile(file)) {
+    return await fs.readFile(file, { encoding: 'utf8' });
   } else {
     console.error(missingError);
     return '';
@@ -46,31 +46,31 @@ export async function getFileContent(fileName: string): Promise<string> {
 
 /**
  * Return JSON parsed file
- * @param {String} filePath
+ * @param {String} file
  * @returns {Promise<Object>}
  */
-export async function getJSONParsedContent(filePath: string): Promise<any> {
-  return await fs.readJson(filePath);
+export async function getJSONParsedContent(file: string): Promise<any> {
+  return await fs.readJson(file);
 }
 
 /**
  *
  * @param {Object} object
- * @param {String} filePath
+ * @param {String} file
  * @returns {Promise<Boolean>}
  */
-export async function writeJSONToFile(filePath: string, object: object): Promise<boolean> {
-  await fs.outputFile(filePath, JSON.stringify(object, null, 2));
+export async function writeJSONToFile(file: string, object: object): Promise<boolean> {
+  await fs.outputFile(file, JSON.stringify(object, null, 2));
   return true;
 }
 /**
  *
  * @param {Object} content
- * @param {String} filePath
+ * @param {String} file
  * @returns {Promise<Boolean>}
  */
-export async function writeToPlainFile(filePath: string, content: any): Promise<boolean> {
-  await fs.outputFile(filePath, String(content));
+export async function writeToPlainFile(file: string, content: any): Promise<boolean> {
+  await fs.outputFile(file, String(content));
   return true;
 }
 
@@ -99,14 +99,14 @@ export async function copy(source: string, destination: string): Promise<boolean
 
 /**
  * List all files in a directory (recoursive)
- * @param {String} dir
+ * @param {String} folder
  * @returns {Array<string>}
  */
-export function listFiles(dir: string): Array<string> {
-  var results: Array<string> = [];
-  fs.readdirSync(dir).forEach((file: string) => {
-    const foundFile = `${dir}/${file}`;
-    var stat = fs.statSync(foundFile);
+export function listFiles(folder: string): Array<string> {
+  let results: Array<string> = [];
+  fs.readdirSync(folder).forEach((file: string) => {
+    const foundFile = `${folder}/${file}`;
+    const stat = fs.statSync(foundFile);
     if (stat && stat.isDirectory()) {
       results = results.concat(listFiles(foundFile));
     } else {
@@ -117,32 +117,21 @@ export function listFiles(dir: string): Array<string> {
   return results;
 }
 
-/**
- * Return the stream for given file
- * @param {String} filePath
- * @returns ReadStream
- */
-export async function readStream(filePath: string): Promise<ReadStream> {
-  return new Promise((resolve, reject) => {
-    const stream: ReadStream = fs.createReadStream(path.resolve(filePath));
-    stream.on('error', () => {
-      reject(`Error reading file stream for '${filePath}'`);
-    });
-    stream.on('ready', () => {
-      resolve(stream);
-    });
-  });
+export function listFolders(folder: string): Array<string> {
+  return readdirSync(folder, { withFileTypes: true })
+    .filter((dirent: Dirent) => dirent.isDirectory())
+    .map((dirent: Dirent) => dirent.name);
 }
 
 /**
  * Rename file
- * @param {String} source the source file
+ * @param {String} file the source file
  * @param {String} newname the destination file with new name
  * @returns {Promise<boolean>}
  */
-export async function rename(source: string, newname: string): Promise<boolean> {
+export async function rename(file: string, newname: string): Promise<boolean> {
   try {
-    await fs.rename(source, newname);
+    await fs.rename(file, newname);
     return true;
   } catch (error) {
     console.error(error);

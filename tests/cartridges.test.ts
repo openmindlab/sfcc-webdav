@@ -1,5 +1,5 @@
 import { projectCartridges } from '../src/cartridges';
-import { checkForFile, createFolderIfNotExists, deleteFolder } from '../src/files';
+import { checkForFile, createFolderIfNotExists, deleteFileOrFolder } from '../src/files';
 const testFolder = `${process.cwd()}/cartridges`;
 
 describe('cartridges.projectCartridges', () => {
@@ -14,7 +14,7 @@ describe('cartridges.projectCartridges', () => {
   });
   test('return a list of folders', async () => {
     if (checkForFile(testFolder)) {
-      deleteFolder(testFolder);
+      deleteFileOrFolder(testFolder);
     }
     try {
       projectCartridges();

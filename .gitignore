@@ -1,7 +1,7 @@
 node_modules
 .history
 package-lock.json
-dw.json
+/dw.json
 dist/*
 test_folder_tmp
 coverage

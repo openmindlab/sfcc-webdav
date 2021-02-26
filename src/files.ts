@@ -15,7 +15,7 @@ export async function createFolderIfNotExists(folder: string): Promise<string> {
  * @param {String} folder
  * @returns {Promise<Boolean>}
  */
-export async function deleteFolder(folder: string): Promise<boolean> {
+export async function deleteFileOrFolder(folder: string): Promise<boolean> {
   await fs.remove(folder);
   return true;
 }

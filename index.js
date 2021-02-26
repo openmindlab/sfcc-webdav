@@ -24,14 +24,14 @@ async function test() {
     );
     console.log(response);
   } catch (err) {} */
-  /*const token = new Token();
+  const token = new Token();
   token.authorize();
   token.on('authorized', (token, expiration) => {
     console.log('authorized', token, new Date(expiration));
   });
   token.on('expired', (token, expiration) => {
     console.log('expired', token, new Date(expiration));
-  });*/
+  });
   /* const package = await packagejson();
   console.log(package); */
   /* const dwInstance = await dwinstance();
@@ -39,6 +39,5 @@ async function test() {
   //dwInstance.setCodeVersion('pippo');
   /* const token = await tokenstring();
   console.log(token); */
-  const c = projectC.projectCartridges();
 }
 test();

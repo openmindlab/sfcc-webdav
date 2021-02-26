@@ -1,8 +1,8 @@
 import * as fileUtils from '../src/files';
 import path from 'path';
-const testFolder = `${process.cwd()}/test_folder_tmp`;
+const testFolder = `${process.cwd()}/__mocks__`;
 const testFile = 'demofile';
-fileUtils.deleteFolder(testFolder);
+const subdir = `${testFolder}/subdir`;
 describe('File Utils', () => {
   test('Create folder if not extists', async () => {
     const operation = await fileUtils.createFolderIfNotExists(testFolder);
@@ -34,7 +34,6 @@ describe('File Utils', () => {
     expect(operation).toEqual({ content: true });
   });
   test('Copy files', async () => {
-    const subdir = `${testFolder}/subdir`;
     await fileUtils.createFolderIfNotExists(subdir);
     const operation = await fileUtils.copy('./package.json', subdir);
     expect(operation).toEqual(true);
@@ -44,7 +43,9 @@ describe('File Utils', () => {
     expect(operation).toEqual([
       `${path.resolve(`${testFolder}/${testFile}.json`)}`,
       `${path.resolve(`${testFolder}/${testFile}.txt`)}`,
-      `${path.resolve(`${testFolder}/subdir/package.json`)}`
+      `${path.resolve(`${testFolder}/dw.json`)}`,
+      `${path.resolve(`${testFolder}/subdir/package.json`)}`,
+      `${path.resolve(`${testFolder}/testUploadFile.txt`)}`
     ]);
   });
   test('Copy Folder', async () => {
@@ -54,7 +55,6 @@ describe('File Utils', () => {
     expect(operation).toEqual(true);
   });
   test('Copy file does not exists', async () => {
-    const subdir = `${testFolder}/subdir`;
     await fileUtils.createFolderIfNotExists(subdir);
     const operation = await fileUtils.copy('./package_fake.json', subdir);
     expect(operation).toEqual(false);
@@ -69,7 +69,9 @@ describe('File Utils', () => {
     expect(consoleSpy).toHaveBeenCalled();
   });
   test('Delete folder', async () => {
-    const operation = await fileUtils.deleteFolder(testFolder);
+    await fileUtils.deleteFileOrFolder(`${testFolder}/${testFile}_renamed.txt`);
+    await fileUtils.deleteFileOrFolder(`${testFolder}/${testFile}.json`);
+    const operation = await fileUtils.deleteFileOrFolder(subdir);
     expect(operation).toBe(true);
   });
 });

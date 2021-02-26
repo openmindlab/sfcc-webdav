@@ -1,4 +1,4 @@
-import fs, { ReadStream, readdirSync, Dirent } from 'fs-extra';
+import fs, { readdirSync, Dirent } from 'fs-extra';
 import path from 'path';
 
 /**

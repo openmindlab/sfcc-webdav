@@ -14,11 +14,11 @@ export class JSONConfig {
     }
   }
   setupPath() {
-    this.path = `${process.cwd()}/${this.file}`;
+    this.path = `${this.file}`;
   }
   async loadScheme() {
     try {
-      return await getJSONParsedContent(`${process.cwd()}/${this.schemaFile}`);
+      return await getJSONParsedContent(`${this.schemaFile}`);
     } catch (error) {
       console.error(chalk`{bgRed.black ${error}}`);
     }

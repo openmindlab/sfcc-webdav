@@ -15,7 +15,7 @@ function getDwJson() {
     error(chalk.red(`Missing file ${dwjsonpath}\n`));
     throw new Error(`Missing file ${dwjsonpath}`);
   }
-  const dwjson = JSON.parse(fs.readFileSync(path.join(cwd, 'dw.json'), 'UTF-8'));
+  const dwjson = JSON.parse(fs.readFileSync(path.join(cwd, 'dw.json'), { encoding: 'utf8' }));
   return dwjson;
 }
 export interface DwJson {

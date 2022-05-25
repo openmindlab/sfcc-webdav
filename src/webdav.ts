@@ -99,7 +99,7 @@ export class Webdav {
     this.token = data.access_token;
   }
 
-  async sendRequest(options: AxiosRequestConfig, callback: Function) {
+  async sendRequest(options: AxiosRequestConfig, callback: Function, retry?: Function) {
     try {
       let { data } = await this.axios.request(options);
       callback(data);
@@ -112,8 +112,12 @@ export class Webdav {
         options.headers.Authorization = `Bearer ${this.token}`;
       }
       try {
-        let { data } = await Axios.request(options);
-        callback(data);
+        if (retry) {
+          await retry();
+        } else {
+          let { data } = await Axios.request(options);
+          callback(data);
+        }
       } catch (innerErr) {
         error(chalk.red('Error processing retry:', err));
         throw err;
@@ -121,7 +125,7 @@ export class Webdav {
     }
   }
 
-  async fileUpload(file: string, relativepath: string) {
+  async fileUpload(file: string, relativepath: string, retry?: boolean) {
     if (!this.hostname) {
       error(chalk.red("Missing hostname! Cannot make create a request without it."));
       throw "Missing hostname";
@@ -140,7 +144,11 @@ export class Webdav {
         method: 'PUT',
         data: fileStream
       };
-      await this.sendRequest(options, () => log(chalk.cyan(`Uploaded ${relativepath} [${prettyBytes(filesize)}]`)));
+      if (retry){
+        await this.sendRequest(options, () => log(chalk.cyan(`Uploaded ${relativepath} [${prettyBytes(filesize)}]`)), async () => this.fileUpload(file, relativepath, false));
+      } else {
+        await this.sendRequest(options, () => log(chalk.cyan(`Uploaded ${relativepath} [${prettyBytes(filesize)}]`)));
+      }
     })
   }
 
@@ -172,7 +180,7 @@ export default webdav;
  * @param {string} remote path, starting with '/cartridges'
  */
 export async function fileUpload(file: string, relativepath: string) {
-  await webdav.fileUpload(file, relativepath);
+  await webdav.fileUpload(file, relativepath, true);
 }
 
 /**

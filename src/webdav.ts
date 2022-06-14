@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import path from 'path';
-import fs from 'fs';
+import Axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import chalk from 'chalk';
+import fs from 'fs';
+import path from 'path';
 import prettyBytes from 'pretty-bytes';
-import Axios, { AxiosRequestConfig, AxiosInstance } from 'axios';
 
 const cwd = process.cwd();
 
@@ -104,7 +104,7 @@ export class Webdav {
       let { data } = await this.axios.request(options);
       callback(data);
     } catch (err) {
-      error(chalk.red('Error processing request:', err));
+      error(chalk.red('Error processing request for file', options.url, ':', err));
       if (options?.headers?.Authorization) {
         if (this.trace) console.debug(`Expiring Token! ${this.token}`)
         await this.authorize();
@@ -142,6 +142,9 @@ export class Webdav {
           Authorization: `Bearer ${this.token}`
         },
         method: 'PUT',
+        decompress: true,
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
         data: fileStream
       };
       if (retry){

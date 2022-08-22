@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import Axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import bytesize from 'byte-size';
 import fs from 'fs';
 import path from 'path';
 import pc from 'picocolors';
-import prettyBytes from 'pretty-bytes';
+
 
 const cwd = process.cwd();
 
@@ -133,7 +134,7 @@ export class Webdav {
     if (!this.token) await this.authorize();
     const fileStream = fs.createReadStream(file);
     fileStream.on('error', (err: any) => error(`On Upload request of file ${file}, ReadStream Error: ${err}`));
-    const filesize = fs.statSync(file).size;
+    const size = fs.statSync(file).size;
     fileStream.on('ready', async () => {
       const options: AxiosRequestConfig = {
         baseURL: `https://${this.hostname}`,
@@ -148,9 +149,9 @@ export class Webdav {
         data: fileStream
       };
       if (retry) {
-        await this.sendRequest(options, () => log(pc.cyan(`Uploaded ${relativepath} [${prettyBytes(filesize)}]`)), async () => this.fileUpload(file, relativepath, false));
+        await this.sendRequest(options, () => log(pc.cyan(`Uploaded ${relativepath} [${bytesize(size)}]`)), async () => this.fileUpload(file, relativepath, false));
       } else {
-        await this.sendRequest(options, () => log(pc.cyan(`Uploaded ${relativepath} [${prettyBytes(filesize)}]`)));
+        await this.sendRequest(options, () => log(pc.cyan(`Uploaded ${relativepath} [${bytesize(size)}]`)));
       }
     })
   }

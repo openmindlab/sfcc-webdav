@@ -2,13 +2,6 @@
 
 >  Salesforce Commerce Cloud simple webdav API
 
-<div>
-	<br>
-	<a href="https://openmindonline.it" target="_blank"><img width="200" src="openmind.svg" alt="openmind"></a>
-	<br>
-	<br>
-</div>
-
 ## Features
 
 * API for upload and delete files via webdav, useful for real-time upload of changes file during development
@@ -71,7 +64,5 @@ sfccwebdav.fileDelete('/path/to/local/file', '/cartridges/mycodeversion/app_stor
 
 
 ## License
-
-Copyright (c) openmind
 
 Released under the MIT license.

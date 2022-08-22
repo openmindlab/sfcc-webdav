@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import Axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
-import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
+import pc from 'picocolors';
 import prettyBytes from 'pretty-bytes';
 
 const cwd = process.cwd();
@@ -12,7 +12,7 @@ const { log, error } = console;
 function getDwJson() {
   let dwjsonpath = path.join(cwd, 'dw.json');
   if (!fs.existsSync(dwjsonpath)) {
-    error(chalk.red(`Missing file ${dwjsonpath}\n`));
+    error(pc.red(`Missing file ${dwjsonpath}\n`));
     throw new Error(`Missing file ${dwjsonpath}`);
   }
   const dwjson = JSON.parse(fs.readFileSync(path.join(cwd, 'dw.json'), { encoding: 'utf8' }));
@@ -42,21 +42,21 @@ export class Webdav {
     this.axios = Axios.create();
     this.axios.interceptors.request.use(request => {
       if (this.trace) {
-        log(chalk.cyan('Sending Request:'));
-        log(chalk.cyan('baseUrl: '), request.baseURL);
-        log(chalk.cyan('url: '), request.url);
-        log(chalk.cyan('method: '), request.method);
-        log(chalk.cyan('headers: '), JSON.stringify(request.headers));
-        log(chalk.cyan('data: '), JSON.stringify(request.data));
+        log(pc.cyan('Sending Request:'));
+        log(pc.cyan('baseUrl: '), request.baseURL);
+        log(pc.cyan('url: '), request.url);
+        log(pc.cyan('method: '), request.method);
+        log(pc.cyan('headers: '), JSON.stringify(request.headers));
+        log(pc.cyan('data: '), JSON.stringify(request.data));
       }
       return request;
     })
     this.axios.interceptors.response.use(response => {
       if (this.trace) {
-        log(chalk.cyan('Sending Response:'));
-        log(chalk.cyan('Status: '), response.status);
-        log(chalk.cyan('Status Msg: '), response.statusText);
-        log(chalk.cyan('Response Data: '), JSON.stringify(response.data))
+        log(pc.cyan('Sending Response:'));
+        log(pc.cyan('Status: '), response.status);
+        log(pc.cyan('Status Msg: '), response.statusText);
+        log(pc.cyan('Response Data: '), JSON.stringify(response.data))
       }
       return response;
     })
@@ -77,12 +77,12 @@ export class Webdav {
 
   async authorize() {
     if (!this.clientId) {
-      error(chalk.red("Missing Client-id! Cannot make authorize request without it."));
+      error(pc.red("Missing Client-id! Cannot make authorize request without it."));
       throw "Missing Client-id";
 
     }
     if (!this.clientSecret) {
-      error(chalk.red("Missing Client-secret! Cannot make authorize request without it."));
+      error(pc.red("Missing Client-secret! Cannot make authorize request without it."));
       throw "Missing Client-secret";
     }
     const { data } = await this.axios.request({
@@ -104,7 +104,7 @@ export class Webdav {
       let { data } = await this.axios.request(options);
       callback(data);
     } catch (err) {
-      error(chalk.red('Error processing request for file', options.url, ':', err));
+      error(pc.red(`Error processing request for file ${options.url}: ${err.message}`));
       if (options?.headers?.Authorization) {
         if (this.trace) console.debug(`Expiring Token! ${this.token}`)
         await this.authorize();
@@ -119,7 +119,7 @@ export class Webdav {
           callback(data);
         }
       } catch (innerErr) {
-        error(chalk.red('Error processing retry:', err));
+        error(pc.red(`Error processing retry: ${err.message}`));
         throw err;
       }
     }
@@ -127,7 +127,7 @@ export class Webdav {
 
   async fileUpload(file: string, relativepath: string, retry?: boolean) {
     if (!this.hostname) {
-      error(chalk.red("Missing hostname! Cannot make create a request without it."));
+      error(pc.red("Missing hostname! Cannot make create a request without it."));
       throw "Missing hostname";
     }
     if (!this.token) await this.authorize();
@@ -147,17 +147,17 @@ export class Webdav {
         maxBodyLength: Infinity,
         data: fileStream
       };
-      if (retry){
-        await this.sendRequest(options, () => log(chalk.cyan(`Uploaded ${relativepath} [${prettyBytes(filesize)}]`)), async () => this.fileUpload(file, relativepath, false));
+      if (retry) {
+        await this.sendRequest(options, () => log(pc.cyan(`Uploaded ${relativepath} [${prettyBytes(filesize)}]`)), async () => this.fileUpload(file, relativepath, false));
       } else {
-        await this.sendRequest(options, () => log(chalk.cyan(`Uploaded ${relativepath} [${prettyBytes(filesize)}]`)));
+        await this.sendRequest(options, () => log(pc.cyan(`Uploaded ${relativepath} [${prettyBytes(filesize)}]`)));
       }
     })
   }
 
   async fileDelete(file: string, relativepath: string) {
     if (!this.hostname) {
-      error(chalk.red("Missing hostname! Cannot make create a request without it."));
+      error(pc.red("Missing hostname! Cannot make create a request without it."));
       throw "Missing hostname";
     }
     if (!this.token) await this.authorize();
@@ -169,7 +169,7 @@ export class Webdav {
       },
       method: 'DELETE'
     };
-    await this.sendRequest(options, () => log(chalk.cyan(`Deleted ${relativepath}`)));
+    await this.sendRequest(options, () => log(pc.cyan(`Deleted ${relativepath}`)));
   }
 }
 
